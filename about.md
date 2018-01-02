@@ -9,6 +9,4 @@ permalink: /about/
 Hi there, my name is Ronny and I'm currently working as a machine learning researcher.
 I'm passionate about computational intelligence and programming languages.
 
-### Contact me
-
-[email@domain.com](mailto:rhu90@gmail.com)
+### [Contact me](mailto:rhug90@gmail.com)
