@@ -27,3 +27,18 @@ Hiho
 - visual studio code and rust extension
 - fft selbst implementieren?
 
+<!--
+TODO bis zu diesem Post
+
+Java
+- einfache 3D Szene mit Kamera und ein paar Würfeln (wie im learnopengl tutorial, nur dass hier direkt eine Mesh Klasse benutzt werden soll)
+-- https://learnopengl.com/#!Getting-started/Camera
+
+Rust
+- wav laden mit hound
+- fft implementierung?
+-- http://sites.music.columbia.edu/cmc/MusicAndComputers/chapter3/03_04.php
+-- https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+-- http://jakevdp.github.io/blog/2013/08/28/understanding-the-fft/
+-- http://www.drdobbs.com/cpp/a-simple-and-efficient-fft-implementatio/199500857
+-->
