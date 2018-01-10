@@ -41,4 +41,5 @@ Rust
 -- https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
 -- http://jakevdp.github.io/blog/2013/08/28/understanding-the-fft/
 -- http://www.drdobbs.com/cpp/a-simple-and-efficient-fft-implementatio/199500857
+- use python for plotting (for now)
 -->
