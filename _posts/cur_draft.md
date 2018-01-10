@@ -36,7 +36,7 @@ Java
 
 Rust
 - wav laden mit hound
-- fft implementierung?
+- fft implementierung? -> eher: fange an notenanschläge zu zählen
 -- http://sites.music.columbia.edu/cmc/MusicAndComputers/chapter3/03_04.php
 -- https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
 -- http://jakevdp.github.io/blog/2013/08/28/understanding-the-fft/
