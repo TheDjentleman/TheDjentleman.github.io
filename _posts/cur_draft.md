@@ -12,8 +12,9 @@ Hiho
 ## Java Project
 - intellij idea
 - lwjgl 3
+- https://www.lwjgl.org/guide
 - https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details
-- https://www.youtube.com/user/ThinMatrix
+- https://www.youtube.com/watch?v=BHD7IFguVes&list=PL11uLCLEeKW5HsMBjwfuElr_EwoBqxoQL
 - https://learnopengl.com/
 - starte mit simpelstem game loop (einfaches update -> fixedupdate kommt später dann)
 - schaffe grundlage um ein mesh zu generieren und zu zeichnen (ohne licht!)
