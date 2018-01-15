@@ -3,6 +3,7 @@ layout: post
 title: Programming Journey 2018 - Derusting some Java and rusting some Rust
 github_comments_issueid: "2"
 ---
+<!-- https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet -->
 
 # Programming Journey 2018 - Derusting some Java and rusting some Rust
 Already two weeks in and I'm still holding on to my New Year's resolution (yey).
