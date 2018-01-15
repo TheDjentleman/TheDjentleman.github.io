@@ -1,4 +1,4 @@
-> Update: Added comment section functionality based on [this](https://dc25.github.io/myBlog/2017/06/24/using-github-comments-in-a-jekyll-blog.html)
+> Update: Added comment section functionality based on [this](https://dc25.github.io/myBlog/2017/06/24/using-github-comments-in-a-jekyll-blog.html).
 
 # Jekyll Now
 
