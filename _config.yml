@@ -36,6 +36,9 @@ footer-links:
 # You can find your shortname on the Settings page of your Disqus account
 disqus:
 
+# Github repository to be used for hosting comments
+github_comments_repository: xy7e/journey-2018-blog-comments
+
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
 google_analytics:
 
