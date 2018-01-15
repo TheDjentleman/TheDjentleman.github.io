@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Derusting some Java and rusting some Rust
+github_comments_issueid: "2"
 ---
 
 Hiho
