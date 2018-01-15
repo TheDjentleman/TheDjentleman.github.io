@@ -1,16 +1,62 @@
 ---
 layout: post
-title: Derusting some Java and rusting some Rust
+title: Programming Journey 2018 - Derusting some Java and rusting some Rust
 github_comments_issueid: "2"
 ---
 
-Hiho
-- skimmed throught large parts of https://doc.rust-lang.org/book/second-edition/
--> looks like a promising language
-- also skimmed through https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details
--> don't really like the structure of the book, might be helpful for examples though
+# Programming Journey 2018 - Derusting some Java and rusting some Rust
+Already two weeks in and I'm still holding on to my New Year's resolution (yey).
+Welcome to the first update on my programming journey. 
+Only want to read about my Java (project name: Proc2X) or my Rust (project name: WaveTab) project? 
+Jump right into it:
+- [Java Proc2X](#java-project-proc2x)
+- [Rust WaveTab](#rust-project-wavetab)
 
-## Java Project
+In general, I have been mostly skimming through some tutorials and books on different relevant topics.
+Futhermore, I have created the two code repositories and started writing some code.
+In this post, I will write mainly about some setup stuff, my first impressions tackling the projects and a rough outline for the weeks to come.
+So let's take a look at my Java project.
+
+## Java Project: Proc2X
+As a very short reminder: In this project I aim to create a simple rts-style game including exploration and civilization building, where as much as possible is generated procedurally. 
+For that, I want to use the Java programming language.
+
+Before even starting, I skimmed through a gitbook named [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details). 
+Although I don't really like the structure of the book (no offence), there is still plenty of useful information in there, especially for newer LWJGL topics.
+It seems like there have been some major changes last year, including the way gpu buffers are handled, which are not covered by older tutorials.
+Besides that, another important resource for me is [learnopengl.com](https://learnopengl.com/), which offers a pretty extensive series of tutorials of OpenGL.
+Whilst these tutorials are for C++, they are still very helpful, as LWJGL is a wrapper around OpenGL for the most part (even on their homepage they suggest to learn the C API first: *If you're just getting started, please familiarize yourself with each [GLFW, OpenGL, OpenAL, ...] API first.*).
+In fact, looking at their [wiki](https://github.com/LWJGL/lwjgl3-wiki/wiki) they kind of discourage you from learning OpenGL through LWJGL :D; okay, this statement is a little over the, so please decide for yourself:
+>Trying to learn the API via LWJGL is possible (a lot of javadoc is included), but not very productive. 
+
+and
+>tl;dr
+>- Get familiar with C.
+>- Get familiar with the native APIs you use.
+>- Read the FAQ and Troubleshooting pages.
+
+With this out of the way, we still want to use LWJGL for re-learning OpenGL (yes, that's right).
+So after reading some stuff, I installed the current version of Java 9, my favourite IDE, Intellij IDEA (it's not that I dislike eclipse, I just like this one more), and started up a new maven project.
+Including LWJGL 3 in your maven project is easy, there is a maven dependency builder on the [LWJGL website](https://www.lwjgl.org/customize) which lets you pick and choose the components of the LWJGL that you want to use (e.g. OpenGL bindings (the graphics API), GLFW (a widely used windowing api) or JOML (the Java OpenGL math library, I guess it is the equivalent of glm for C++)).
+As for the project structure, I am not really sure about what it will look like towards the end of the year, so I just started with some package I think will be needed.
+With this in mind, I expect the project structure to change over time.
+Right now it looks something like this:
+- a
+- b
+
+Having the initial project structure up and running I started to write some code I thought to be essential for starting the project:
+1. A game loop
+2. Some rendering stuff
+3. A 3D camera that enables to navigate through our 3D world
+4. Something that manages (generated) meshes and objects in our 3D world
+
+For the game loop ... fixed time step?
+
+for implementing the stuff i have followed the aforementioned resources and this: https://www.youtube.com/watch?v=BHD7IFguVes&list=PL11uLCLEeKW5HsMBjwfuElr_EwoBqxoQL
+
+why is there no lighting?
+
+
 - intellij idea
 - lwjgl 3
 - https://www.lwjgl.org/guide
@@ -21,13 +67,17 @@ Hiho
 - schaffe grundlage um ein mesh zu generieren und zu zeichnen (ohne licht!)
 - bastele erst an proceduralem zeug
 - projektstruktur wird sich vermutlich (leider) öfter mal ändern da ich noch keine ahnung hab was am besten ist
+- also skimmed through https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details
+-> don't really like the structure of the book, might be helpful for examples though
 
-## Rust Project
+## Rust Project: WaveTab
 - https://doc.rust-lang.org/book/second-edition/
 - https://rustbyexample.com
 - https://crates.io/crates/hound
 - visual studio code and rust extension
 - fft selbst implementieren?
+- skimmed throught large parts of https://doc.rust-lang.org/book/second-edition/
+-> looks like a promising language
 
 <!--
 TODO bis zu diesem Post
