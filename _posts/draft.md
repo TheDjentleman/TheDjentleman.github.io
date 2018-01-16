@@ -22,9 +22,8 @@ So let's take a look at my Java project.
 As a very short reminder: In this project I aim to create a simple rts-style game including exploration and civilization building, where as much as possible is generated procedurally. 
 For that, I want to use the Java programming language.
 
-Before even starting, I skimmed through a gitbook named [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details). 
-Although I don't really like the structure of the book (no offence), there is still plenty of useful information in there, especially for newer LWJGL topics.
-It seems like there have been some major changes last year, including the way gpu buffers are handled, which are not covered by older tutorials.
+Before even starting, I skimmed through some tutorials and a gitbook named [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details). 
+This book looks like the most promising reference for learning LWJGL, especially for newer LWJGL topics (it seems like there have been some major changes last year, including the way gpu buffers are handled, which are not covered by older tutorials).
 Besides that, another important resource for me is [learnopengl.com](https://learnopengl.com/), which offers a pretty extensive series of tutorials of OpenGL.
 Whilst these tutorials are for C++, they are still very helpful, as LWJGL is a wrapper around OpenGL for the most part (even on their homepage they suggest to learn the C API first: *If you're just getting started, please familiarize yourself with each [GLFW, OpenGL, OpenAL, ...] API first.*).
 In fact, looking at their [wiki](https://github.com/LWJGL/lwjgl3-wiki/wiki) they kind of discourage you from learning OpenGL through LWJGL :D; okay, this statement is a little over the, so please decide for yourself:
