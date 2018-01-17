@@ -56,6 +56,10 @@ for implementing the stuff i have followed the aforementioned resources and this
 
 why is there no lighting?
 
+not much interesting code to see fo far: for the large part just an adaption of stuff shown in the book (the book is more taylored towards reusable code for other games, 
+we skip that and reduce some abstractions). maybe one remarkable change some more insight about: the game loop
+
+also i dont see the point of running the gameengine in a different thread, when the main thread will go idle from there (maybe i will learn sometime why this is a good thing)
 
 - intellij idea
 - lwjgl 3
