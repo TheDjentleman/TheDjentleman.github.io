@@ -100,6 +100,8 @@ Also I decided to start off with most of the procedural generation stuff before 
 
 I guess that is all for Java for now, so let's move on to my Rust project.
 
+- doch noch was: joml ist crazy unintuitive, siehe: `right.set(forward).cross(worldUp).normalize();`
+
 ## Rust Project: WaveTab
 The start of my Rust project ([github repository](https://github.com/xy7e/journey-2018-rust-wav2tab)), where I am trying to build a tool that converts raw audio (waves) into guitar tabs, started somewhat similar to my Java project: **Lots** of reading!
 - https://doc.rust-lang.org/book/second-edition/
