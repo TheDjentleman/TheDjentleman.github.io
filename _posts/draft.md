@@ -40,11 +40,14 @@ So after reading some stuff, I installed the current version of Java 9, my favou
 Including LWJGL 3 in your maven project is easy, there is a maven dependency builder on the [LWJGL website](https://www.lwjgl.org/customize) which lets you pick and choose the components of the LWJGL that you want to use (e.g. OpenGL bindings (the graphics API), GLFW (a widely used windowing api) or JOML (the Java OpenGL math library, I guess it is the equivalent of glm for C++)).
 
 ### The Project and Code
-As for the project structure, I am not really sure about what it will look like towards the end of the year, so I just started with some package I think will be needed.
+With the setup done, let's dive into a little bit of code ([github repository](https://github.com/xy7e/journey-2018-java-procedural-2X))! 
+In fact, there is not much interesting to show as of right now.
+Regarding the project structure, I am not really sure about what it will look like towards the end of the year, so I just started with some packages I think will be needed.
 With this in mind, I expect the project structure to change over time.
 Right now it looks something like this:
-- a
-- b
+- graphics
+- scene
+- utils
 
 Having the initial project structure up and running I started to write some code I thought to be essential for starting the project:
 1. A game loop
@@ -52,31 +55,53 @@ Having the initial project structure up and running I started to write some code
 3. A 3D camera that enables to navigate through our 3D world
 4. Something that manages (generated) meshes and objects in our 3D world
 
-For the game loop ... fixed time step?
+Implementation-wise most of the stuff I've got so far is based off the first view chapers of [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details).
+Besides the stuff I kept from the book, I've thrown away some of the abstractions suggested in the book, which are made to have a more game engine like setup with code reusable for multiple projects (which I am not aiming for), and added some abstractions in other places (e.g. for scene management).
+Also, I don't see the point of running the game engine in a separate thread, when the main thread will go idle from there (maybe I will learn  why this is a good thing in the future).
 
-for implementing the stuff i have followed the aforementioned resources and this: https://www.youtube.com/watch?v=BHD7IFguVes&list=PL11uLCLEeKW5HsMBjwfuElr_EwoBqxoQL
+Maybe one thing worth talking about is the game loop.
+On this topic, the book suggests using a *fixed time step* game loop (with the additional possibility to skip frames when needed).
+When using such a game loop, you are forcing all updates and render calls to run a fixed number of times per seconds.
+While this is a very robust way of organizing the game loop and fixed update rates are desireable for stuff like physics or ai, I think you can achieve much smoother movement when processing user input or updating animations as fast as you possibly can.
+Following this, I have changed the implementation to process input and render as often as it can, while updating the game logic in a fixed time step (a great explanation of this type of game loop can be found here: http://gameprogrammingpatterns.com/game-loop.html).
+Further, I have added a second function to update the game logic, which is also (like render) called as often as possible.
+Finally, the game loop looks something like this:
 
-why is there no lighting?
+```
+while (true) {
+    long current = System.nanoTime();
+    long deltaNanoTime = current - previous;
+    previous = current;
+    lag += deltaNanoTime;
 
-not much interesting code to see fo far: for the large part just an adaption of stuff shown in the book (the book is more taylored towards reusable code for other games, 
-we skip that and reduce some abstractions). maybe one remarkable change some more insight about: the game loop
+    // only call fixed update if a specific amount of time has passed
+    // also: do multiple updates (and skip frames) if we got behind due to slow rendering or stuff like that
+    while (lag >= NANOS_PER_UPDATE) {
+        // update stuff like physics or ai on a fixed cycle
+        fixedUpdate();
+        lag -= NANOS_PER_UPDATE;
+    }
 
-also i dont see the point of running the gameengine in a different thread, when the main thread will go idle from there (maybe i will learn sometime why this is a good thing)
+    handleInput();
 
-- intellij idea
-- lwjgl 3
-- https://www.lwjgl.org/guide
-- https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details
-- https://www.youtube.com/watch?v=BHD7IFguVes&list=PL11uLCLEeKW5HsMBjwfuElr_EwoBqxoQL
-- https://learnopengl.com/
-- starte mit simpelstem game loop (einfaches update -> fixedupdate kommt später dann)
-- schaffe grundlage um ein mesh zu generieren und zu zeichnen (ohne licht!)
-- bastele erst an proceduralem zeug
-- projektstruktur wird sich vermutlich (leider) öfter mal ändern da ich noch keine ahnung hab was am besten ist
-- also skimmed through https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details
--> don't really like the structure of the book, might be helpful for examples though
+    // update motion and things like that more frequently
+    update(deltaNanoTime / 1_000_000_000f);
+
+    renderSystem.render(window);
+}
+```
+
+As you can see in this sample, I now have two `update` functions: `fixedUpdate` and `update`, which correspond to the two mentioned before.
+Another remark: I am using `System.nanoTime()` instead of `System.currentTimeMillis()`, because of its seemingly higher precision and consistency (which comes at a insignificantly higher computational cost).
+
+As a next step, I will start with some procedural generation: terrain generation.
+I chose to start with terrain generation, as (I think) it is one of the most common applications for procedural generation, so I thought this might be a good start.
+Also I decided to start off with most of the procedural generation stuff before looking at game play features, because creating game play is more fun when there is actually something interesting to look at.
+
+I guess that is all for Java for now, so let's move on to my Rust project.
 
 ## Rust Project: WaveTab
+The start of my Rust project ([github repository](https://github.com/xy7e/journey-2018-rust-wav2tab)), where I am trying to build a tool that converts raw audio (waves) into guitar tabs, started somewhat similar to my Java project: **Lots** of reading!
 - https://doc.rust-lang.org/book/second-edition/
 - https://rustbyexample.com
 - https://crates.io/crates/hound
@@ -84,6 +109,9 @@ also i dont see the point of running the gameengine in a different thread, when 
 - fft selbst implementieren?
 - skimmed throught large parts of https://doc.rust-lang.org/book/second-edition/
 -> looks like a promising language
+- I am not a dsp guru, but intuitive pipeline from a dsp point of view might be: filter, find notes, fft, ...
+- lazy way: genetic algo (treat it as a search problem), expect problems with decreasing oscillations
+- will try both and maybe combine in the end
 
 <!--
 TODO bis zu diesem Post
