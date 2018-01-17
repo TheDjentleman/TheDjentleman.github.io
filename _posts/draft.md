@@ -6,7 +6,7 @@ github_comments_issueid: "2"
 <!-- https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet -->
 
 # Programming Journey 2018 - Derusting some Java and rusting some Rust
-Already two weeks in and I'm still holding on to my New Year's resolution (yey).
+Already three weeks in and I'm still holding on to my New Year's resolution (yey).
 Welcome to the first update on my programming journey. 
 Only want to read about my Java (project name: Proc2X) or my Rust (project name: WaveTab) project? 
 Jump right into it:
@@ -94,13 +94,16 @@ while (true) {
 As you can see in this sample, I now have two `update` functions: `fixedUpdate` and `update`, which correspond to the two mentioned before.
 Another remark: I am using `System.nanoTime()` instead of `System.currentTimeMillis()`, because of its seemingly higher precision and consistency (which comes at a insignificantly higher computational cost).
 
+Another thing I just have to point out here is the usability of *JOML*.
+- like omg, its the most unintuitive thing i have ever used
+- had to look into the source code to understand whats happening (camera example https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h)
+- javadoc indicates something else
+
 As a next step, I will start with some procedural generation: terrain generation.
 I chose to start with terrain generation, as (I think) it is one of the most common applications for procedural generation, so I thought this might be a good start.
 Also I decided to start off with most of the procedural generation stuff before looking at game play features, because creating game play is more fun when there is actually something interesting to look at.
 
 I guess that is all for Java for now, so let's move on to my Rust project.
-
-- doch noch was: joml ist crazy unintuitive, siehe: `right.set(forward).cross(worldUp).normalize();`
 
 ## Rust Project: WaveTab
 The start of my Rust project ([github repository](https://github.com/xy7e/journey-2018-rust-wav2tab)), where I am trying to build a tool that converts raw audio (waves) into guitar tabs, started somewhat similar to my Java project: **Lots** of reading!
