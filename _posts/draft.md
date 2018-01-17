@@ -38,6 +38,8 @@ and
 With this out of the way, we still want to use LWJGL for re-learning OpenGL (yes, that's right).
 So after reading some stuff, I installed the current version of Java 9, my favourite IDE, Intellij IDEA (it's not that I dislike eclipse, I just like this one more), and started up a new maven project.
 Including LWJGL 3 in your maven project is easy, there is a maven dependency builder on the [LWJGL website](https://www.lwjgl.org/customize) which lets you pick and choose the components of the LWJGL that you want to use (e.g. OpenGL bindings (the graphics API), GLFW (a widely used windowing api) or JOML (the Java OpenGL math library, I guess it is the equivalent of glm for C++)).
+
+### Code
 As for the project structure, I am not really sure about what it will look like towards the end of the year, so I just started with some package I think will be needed.
 With this in mind, I expect the project structure to change over time.
 Right now it looks something like this:
