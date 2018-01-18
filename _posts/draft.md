@@ -142,13 +142,40 @@ I guess that is all for Java for now, so let's move on to my Rust project.
 
 ## Rust Project: WaveTab
 The start of my Rust project ([github repository](https://github.com/xy7e/journey-2018-rust-wav2tab)), where I am trying to build a tool that converts raw audio (waves) into guitar tabs, started somewhat similar to my Java project: **Lots** of reading!
-- https://doc.rust-lang.org/book/second-edition/
-- https://rustbyexample.com
-- https://crates.io/crates/hound
-- visual studio code and rust extension
-- fft selbst implementieren?
-- skimmed throught large parts of https://doc.rust-lang.org/book/second-edition/
--> looks like a promising language
+Also, as I just started learning the language, there isn't as much code here yet, at least compared to the Java project.
+
+To begin with, I've read through a large portion of *The Book* (as they like to call it), namely [The Rust Programming Language](https://doc.rust-lang.org/book/second-edition/).
+It is filled with a lot of information and small examples and I think it is very well written and easy to follow/understand.
+When I started coding, I also found [rustbyexample](https://rustbyexample.com) to be a very good resource on how to use the standard library and the language in general.
+
+So, what are my first impressions on the language and what have I achieved so far?
+First off, I really like *cargo*, Rust's build system and package manager.
+Rust enforces a specific project structure, but it is pretty straight forward:
+- In the project root directory, you have a file that contains information about the project and external dependencies, as well as a folder named *src* where you put (you guessed it) your source files
+- You wan't an executable? Then you need a source file named `main.rs` 
+- Your project is a library? Then you need a source file named `lib.rs`
+- `main.rs` (or `lib.rs`) is the entry point of your program (or library)
+- In Rust you group functionality in *modules*, where the module name equals the source file name
+- I think that describes the biggest part of it
+
+When you are looking for 3rd party libs (so called *crates*, I think), you can just look for existing stuff at [crates.io](https://crates.io/).
+
+### Project Setup and Code
+Next, I want to give a very brief description on how I've set up my programming environment and the project itself.
+Afterwards we will look at some code.
+
+As there isn't really a standard IDE for Rust yet, I looked at the chart on a website called [areweideyet.com](https://areweideyet.com/), to see which code editors and IDEs already plugins that support Rust.
+From the pretty extensive list, I chose to go with Visual Studio Code, because I kinda like that editor and there is a comprehensive Rust plugin for that editor.
+
+- project als lib, wegen evtl nutzung als backend für graphische oberfläche in c# oder so
+- main.rs hinzugefügt um so bisschen damit rumzuspielen
+- start with audio signal loaded from wav: hound
+- good when there's something to look at: python plot (piped process)
+- extending classes, trait constraints
+- vector vs array vs slice
+
+asdf
+
 - I am not a dsp guru, but intuitive pipeline from a dsp point of view might be: filter, find notes, fft, ...
 - lazy way: genetic algo (treat it as a search problem), expect problems with decreasing oscillations
 - will try both and maybe combine in the end
@@ -159,6 +186,12 @@ TODO bis zu diesem Post
 Java
 - einfache 3D Szene mit Kamera und ein paar Würfeln (wie im learnopengl tutorial, nur dass hier direkt eine Mesh Klasse benutzt werden soll)
 -- https://learnopengl.com/#!Getting-started/Camera
+DANACH
+save scene as number of objects
+scene in GameLogic klasse stecken oder so? -> alles mögliche aus Proc2X rausschieben
+
+inheritance hierarchie für sceneobjects -> SceneObject ist abstract, dann können klassen davon abgeleitet werden und noch interfaces mit default methoden eingebaut werden!
+-> interfaces bringen gewisse funktionalitäten mit
 
 Rust
 - wav laden mit hound
