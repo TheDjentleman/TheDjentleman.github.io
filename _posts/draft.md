@@ -6,7 +6,7 @@ github_comments_issueid: "2"
 <!-- https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet -->
 
 # Programming Journey 2018 - Derusting some Java and rusting some Rust
-Already three weeks in and I'm still holding on to my New Year's resolution (yey).
+Almost three weeks in and I'm still holding on to my New Year's resolution (yey).
 Welcome to the first update on my programming journey. 
 Only want to read about my Java (project name: Proc2X) or my Rust (project name: WaveTab) project? 
 Jump right into it:
