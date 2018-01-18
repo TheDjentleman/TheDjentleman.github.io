@@ -95,10 +95,44 @@ while (true) {
 As you can see in this sample, I now have two `update` functions: `fixedUpdate` and `update`, which correspond to the two mentioned before.
 Another remark: I am using `System.nanoTime()` instead of `System.currentTimeMillis()`, because of its seemingly higher precision and consistency (which comes at a insignificantly higher computational cost).
 
-The thing I just have to point out here is the usability of *JOML*, the math library.
-- like omg, its the most unintuitive thing i have ever used
-- had to look into the source code to understand whats happening (camera example https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h)
-- javadoc indicates something else
+The other thing I just have to point out here is my first encounter with *JOML*, the math library, where I learned that reading the docs is better than just assuming that JOML works like glm (my assumption stemmed from the fact that JOML is shipped as an addon to lwjgl, like glm is for OpenGL in a C++ context, for doing vector and matrix algebra).
+Look at the following scenario: For my camera, I've set up three vectors (as suggested [here](https://learnopengl.com/#!Getting-started/Camera)), `forward`, `up` and `right`, which point in the direction they are named, while taking the camera's rotation (`pitch` and `yaw`) into consideration.
+With such an approach, we have to recalculate these vectors everytime `pitch` or `yaw` are changing, so I ported the C++ code directly to Java using JOML instead of glm.
+Then it looked like this:
+```
+forward.x = (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+forward.y = (float)Math.sin(Math.toRadians(pitch));
+forward.z = (float)(Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+forward = forward.normalize();
+right = forward.cross(worldUp).normalize();
+up = right.cross(forward).normalize();
+```
+
+I ran this code and BOOM, all of these vectors were `NaN`.
+So, what happened?
+Looking at the signature, the methods `cross` and `normalize` return a `Vector3f`, so I thought it would create a new vector and return that (just like glm does).
+I then looked into the source code of `Vector3f` and figured that the returned `Vector3f` actually is the vector itself (`this`).
+While I understand this design to save unnecessary object creations, it was just unintuitive for me, that a method that modifies the object itself is returning `this` instead of being `void`.
+What I've learned from that: Just read the documentation first, dumbass!
+Even on the main page of the [JOML github](https://github.com/JOML-CI/JOML) it reads:
+>All operations in JOML are designed to modify the object on which the operation is invoked.
+
+From there, it was clear for me, how to do the stuff I want to do.
+Finally, one way of implementing it correctly, would be this:
+```
+forward.x = (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+forward.y = (float)Math.sin(Math.toRadians(pitch));
+forward.z = (float)(Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+forward.normalize();
+right.set(forward).cross(worldUp).normalize();
+up.set(right).cross(forward).normalize();
+```
+
+Looking at `right` for example, we first set its values to be those of `forward`.
+Then we calculate the cross product with `worldUp`, which modifies `right`.
+Lastly, we normalize `right`, just by calling `normalize`.
+The way JOML works, allows us to chain calculations like I did here.
+That is pretty neat in my opinion.
 
 As a next step, I will start with some procedural generation: terrain generation.
 I chose to start with terrain generation, as (I think) it is one of the most common applications for procedural generation, so I thought this might be a good start.
