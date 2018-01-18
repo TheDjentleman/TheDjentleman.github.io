@@ -55,11 +55,12 @@ Having the initial project structure up and running I started to write some code
 3. A 3D camera that enables to navigate through our 3D world
 4. Something that manages (generated) meshes and objects in our 3D world
 
-Implementation-wise most of the stuff I've got so far is based off the first view chapers of [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details).
+Implementation-wise most of the stuff I've got so far is based off the first view chapers of [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details) and [learnopengl](https://learnopengl.com/) (mostly camera-related topics).
 Besides the stuff I kept from the book, I've thrown away some of the abstractions suggested in the book, which are made to have a more game engine like setup with code reusable for multiple projects (which I am not aiming for), and added some abstractions in other places (e.g. for scene management).
 Also, I don't see the point of running the game engine in a separate thread, when the main thread will go idle from there (maybe I will learn  why this is a good thing in the future).
 
-Maybe one thing worth talking about is the game loop.
+I think, there are maybe two things worth talking about.
+One of these is the game loop.
 On this topic, the book suggests using a *fixed time step* game loop (with the additional possibility to skip frames when needed).
 When using such a game loop, you are forcing all updates and render calls to run a fixed number of times per seconds.
 While this is a very robust way of organizing the game loop and fixed update rates are desireable for stuff like physics or ai, I think you can achieve much smoother movement when processing user input or updating animations as fast as you possibly can.
@@ -94,7 +95,7 @@ while (true) {
 As you can see in this sample, I now have two `update` functions: `fixedUpdate` and `update`, which correspond to the two mentioned before.
 Another remark: I am using `System.nanoTime()` instead of `System.currentTimeMillis()`, because of its seemingly higher precision and consistency (which comes at a insignificantly higher computational cost).
 
-Another thing I just have to point out here is the usability of *JOML*.
+The thing I just have to point out here is the usability of *JOML*, the math library.
 - like omg, its the most unintuitive thing i have ever used
 - had to look into the source code to understand whats happening (camera example https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h)
 - javadoc indicates something else
