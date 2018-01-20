@@ -55,11 +55,11 @@ Having the initial project structure up and running I started to write some code
 3. A 3D camera that enables to navigate through our 3D world
 4. Something that manages (generated) meshes and objects in our 3D world
 
-Implementation-wise most of the stuff I've got so far is based off the first view chapers of [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details) and [learnopengl](https://learnopengl.com/) (mostly camera-related topics).
+Implementation-wise most of the stuff I've got so far is based off the first view chapers of [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details) and [learnopengl](https://learnopengl.com/) (mostly camera-related topics), so I want be talking much about Java code in this post.
 Besides the stuff I kept from the book, I've thrown away some of the abstractions suggested in the book, which are made to have a more game engine like setup with code reusable for multiple projects (which I am not aiming for), and added some abstractions in other places (e.g. for scene management).
 Also, I don't see the point of running the game engine in a separate thread, when the main thread will go idle from there (maybe I will learn  why this is a good thing in the future).
 
-I think, there are maybe two things worth talking about.
+Now, there are two things worth talking about.
 One of these is the game loop.
 On this topic, the book suggests using a *fixed time step* game loop (with the additional possibility to skip frames when needed).
 When using such a game loop, you are forcing all updates and render calls to run a fixed number of times per seconds.
@@ -151,7 +151,7 @@ When I started coding, I also found [rustbyexample](https://rustbyexample.com) t
 So, what are my first impressions on the language and what have I achieved so far?
 First off, I really like *cargo*, Rust's build system and package manager.
 Rust enforces a specific project structure, but it is pretty straight forward:
-- In the project root directory, you have a file that contains information about the project and external dependencies, as well as a folder named *src* where you put (you guessed it) your source files
+- In the project root directory, you have a file (`Cargo.toml`) that contains information about the project and external dependencies, as well as a folder named *src* where you put (you guessed it) your source files
 - You wan't an executable? Then you need a source file named `main.rs` 
 - Your project is a library? Then you need a source file named `lib.rs`
 - `main.rs` (or `lib.rs`) is the entry point of your program (or library)
@@ -167,18 +167,59 @@ Afterwards we will look at some code.
 As there isn't really a standard IDE for Rust yet, I looked at the chart on a website called [areweideyet.com](https://areweideyet.com/), to see which code editors and IDEs already plugins that support Rust.
 From the pretty extensive list, I chose to go with Visual Studio Code, because I kinda like that editor and there is a comprehensive Rust plugin for that editor.
 
-- project als lib, wegen evtl nutzung als backend für graphische oberfläche in c# oder so
-- main.rs hinzugefügt um so bisschen damit rumzuspielen
+Having everything installed, the first thing to do is to create a new project.
+I decided to code my converter as a library, with an eventual use as a backend for a c# gui at a later stage, so we simply start up our cmd (on windows) in a directory of our choice and run `cargo new wavetab`.
+With this command, we tell cargo to create a new library project named *wavetab*.
+Cargo then creates a project folder for us which includes the `Cargo.toml` and a source folder containing our `lib.rs`.
+For playing around with our library (without the need of our graphical frontend), I added another source file and named it `main.rs`.
+In this way, we can either build the library or run `main.rs` by calling `cargo build` or `cargo run` respectively (from the project's root folder in a cmd window).
+I also created a folder called `data` in which I will store some *wave* files with different guitar recordings for testing (as of right now there is only one, containing a short note sequence).
+
+Before we dive into some code, I want to some up my plans for approaching the problem of converting a recording into a guitar tab.
+I'm planning to look at it from two perspectives: classic dsp and machine learning.
+I am no dsp guru, but my intuition for a dsp pipeline that extracts the notes played from the recorded wave (I will call this *signal* in the remainder of this post) goes something like this:
+1. Eventually apply some filters to the signal
+2. Identify points of time a new note or chord is being played
+3. Subdivide the signal to separate subsequently played notes or chords
+4. Apply fast fourier transform on signal sections to extract frequencies
+5. Convert frequencies to notes (like a') or chords (like E minor)
+
+I imagine such a pipeline to have a bunch of pitfalls and difficult to tune towards different edge cases.
+Because of that, I am also looking at the lazy way of doing things: machine learning.
+For this, I will (as a first attempt) treat the note extraction problem as a search problem and provide a genetic algorithm with the notes it is able to play and let it figure out which ones to play and when to play those.
+In this approach, I expect problems with decreasing amplitudes in the signal when a note is being held for a period of time.
+When the algorithm just generates perfect signals from the inputs, there aren't any descreasing amplitudes, which might affect the loss calculations in the optimzation.
+But I guess we will see what happens when we get to that point. In the long run, I aim at combining both approaches in some way to use the strengths of each approach.
+
+That being said, let's look at some code!
+So first off, we will add two dependencies we will need: *hound* (for loading wave files) and *num* (for some numeric traits).
+This is as simple as adding the following to our `Cargo.toml`.
+```
+[dependencies]
+hound = "3.3.0"
+num = "0.1.41"
+```
+
+Following this, we import these crates in our `lib.rs`:
+```
+extern crate hound;
+extern crate num;
+```
+
+Next, I want to split the library's functionality into different modules:
+- analysis: parses input signal
+- tab_generation: generates a guitar tab from analysed signal
+- utils: general utility, extension methods and so on
+- plotting: for plotting our signal (and maybe other stuff)
+
+asdf
+
 - start with audio signal loaded from wav: hound
 - good when there's something to look at: python plot (piped process)
 - extending classes, trait constraints
 - vector vs array vs slice
 
-asdf
 
-- I am not a dsp guru, but intuitive pipeline from a dsp point of view might be: filter, find notes, fft, ...
-- lazy way: genetic algo (treat it as a search problem), expect problems with decreasing oscillations
-- will try both and maybe combine in the end
 
 <!--
 TODO bis zu diesem Post
