@@ -264,7 +264,7 @@ pub fn new(wave: Vec<i16>, sample_rate: u32) -> Wavetab {
 ```
 There are just a view things to note here:
 - We pass in the signal vector and the sampling rate
-- The way `wave` is passed, the created object will take ownership (I will explain this briefly [later](#Ownership-and-Borrowing) in this post) of the vector
+- The way `wave` is passed, the created object will take ownership (I will explain this briefly [later](#ownership-and-borrowing) in this post) of the vector
 - Our parameters have exactly the same names as the values of our struct, in this situation, we can initialize the struct by typing `Wavetab { wave, sample_rate }` instead of `Wavetab { wave: wave, sample_rate: sample_rate }` (we will se that in our `from_file` function)
 - The last expression in a function that does not end with a `;` will be returned from the function. We also could have added the `return` keyword in front the expression.
 
