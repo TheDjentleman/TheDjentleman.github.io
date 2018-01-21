@@ -141,7 +141,7 @@ Also I decided to start off with most of the procedural generation stuff before 
 I guess that is all for Java for now, so let's move on to my Rust project.
 
 ## Rust Project: WaveTab
-The start of my Rust project ([github repository](https://github.com/xy7e/journey-2018-rust-wav2tab)), where I am trying to build a tool that converts raw audio (waves) into guitar tabs, started somewhat similar to my Java project: **Lots** of reading!
+The start of my Rust project ([github repository](https://github.com/xy7e/journey-2018-rust-wavetab)), where I am trying to build a tool that converts raw audio (waves) into guitar tabs, started somewhat similar to my Java project: **Lots** of reading!
 Also, as I just started learning the language, there isn't as much code here yet, at least compared to the Java project.
 
 To begin with, I've read through a large portion of *The Book* (as they like to call it), namely [The Rust Programming Language](https://doc.rust-lang.org/book/second-edition/).
@@ -212,12 +212,50 @@ Next, I want to split the library's functionality into different modules:
 - utils: general utility, extension methods and so on
 - plotting: for plotting our signal (and maybe other stuff)
 
+We define all of the modules of our library in `lib.rs` by adding
+```
+pub mod plotting;
+mod analysis;
+mod tab_generation;
+mod utils;
+```
+Here, `mod` is the keyword for, you guessed it, a module.
+By adding `pub` in front of the plotting module, we make it accessible for outside of the library (i.e. for callers of the library; In the current state, I am calling the plotting function from outside the library).
+With `mod <module-name>`, we are just declaring, that there is a module with the given name.
+Because of that, we also have to add the following source files: `plotting.rs`, `analysis.rs`, `tab_generation.rs` and `utils.rs` (the file names have to match the module names).
+As an alternative, we could have implemented the modules in the `lib.rs` file, by also adding the module functionality:
+```
+mod analysis {
+    // functionality
+}
+```
+This can be useful when we don't want to add source files for stuff like small sub modules.
+
+The last thing we have in our `lib.rs` is the definition of a struct named `Wavetab`, which will act like a facade for the library's functionality. 
+In Rust, we define class-like objects by first defining `struct` (this is kind of comparable to C++ structs, except all fields are private), which bundle a bunch of values.
+```
+pub struct Wavetab {
+    wave: Vec<i16>,
+    sample_rate: u32
+}
+```
+So, our Wavetab struct consists of field named *wave*, which is a vector (a dynamically sized array; `Vec<T>` declares a generic type, just like in many other languages), holding 16 bit integers (`i16`), and a field named *sample_rate*, which is an unsigned 32 bit integer.
+In *wave* we will store the input wave signal and in *sample_rate*, the sampling rate at which the continuous audio signal was sampled.
+Also, the struct must be public, to be accessible from outside the library.
+
+Now, to add callable functions to a struct, we rather associate functions with it  
+```
+impl
+```
+
 asdf
 
 - start with audio signal loaded from wav: hound
 - good when there's something to look at: python plot (piped process)
 - extending classes, trait constraints
 - vector vs array vs slice
+
+![wave plot](/images/blog/02_derusting/wave.png)
 
 
 
