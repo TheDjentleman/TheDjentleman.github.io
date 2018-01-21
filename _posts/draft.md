@@ -243,9 +243,51 @@ So, our Wavetab struct consists of field named *wave*, which is a vector (a dyna
 In *wave* we will store the input wave signal and in *sample_rate*, the sampling rate at which the continuous audio signal was sampled.
 Also, the struct must be public, to be accessible from outside the library.
 
-Now, to add callable functions to a struct, we rather associate functions with it  
+Now, to add callable functions to a struct, we *associate* functions with it  
 ```
-impl
+impl Wavetab {
+    // functions
+}
+```
+In Rust, function definitions start with the keyword `fn`, followed by the functions name, its parameters and then the return type after a `->`.
+Knowing how to define a function, we want to associate four functions with *Wavetab*:
+1. A constructor `new` (the name *new* is by convention, it could be called anything)
+2. A convencience function `from_file` to create the struct with data from a file
+3. A getter function for the wave (which should return a immutbile reference to enable [borrowing](https://doc.rust-lang.org/book/second-edition/ch04-00-understanding-ownership.html) of the variable)
+4. The facade function `convert_wave` to do the conversion of the loaded signal.
+
+Our constructor is pretty unspectacular:
+```
+pub fn new(wave: Vec<i16>, sample_rate: u32) -> Wavetab {
+    Wavetab { wave, sample_rate }
+}
+```
+There are just a view things to note here:
+- We pass in the signal vector and the sampling rate
+- The way `wave` is passed, the created object will take ownership (I will explain this briefly [later](#Ownership-and-Borrowing) in this post) of the vector
+- Our parameters have exactly the same names as the values of our struct, in this situation, we can initialize the struct by typing `Wavetab { wave, sample_rate }` instead of `Wavetab { wave: wave, sample_rate: sample_rate }` (we will se that in our `from_file` function)
+- The last expression in a function that does not end with a `;` will be returned from the function. We also could have added the `return` keyword in front the expression.
+
+from file 
+```
+pub fn from_file(file_path: &str) -> Wavetab {
+    let mut reader = match hound::WavReader::open(file_path) {
+        Ok(r) => r,
+        Err(_) => panic!("There was an error reading the file")
+    };
+    let wav_spec = reader.spec();
+    let samples: Vec<i16> = reader.samples::<i16>().map(|sample| {
+        match sample {
+            Ok(s) => s as i16,
+            Err(_) => panic!("Broken sample")
+        }
+    }).collect();
+
+    Wavetab {
+        wave: samples,
+        sample_rate: wav_spec.sample_rate
+    }
+}
 ```
 
 asdf
@@ -257,6 +299,10 @@ asdf
 
 ![wave plot](/images/blog/02_derusting/wave.png)
 
+### Ownership and Borrowing
+- not going into too much detail
+- refer to rust book
+- brief introduction to ownership and borrowing
 
 
 <!--
