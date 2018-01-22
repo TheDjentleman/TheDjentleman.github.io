@@ -6,7 +6,7 @@ github_comments_issueid: "2"
 <!-- https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet -->
 
 # Programming Journey 2018 - Derusting some Java and rusting some Rust
-Almost three weeks in and I'm still holding on to my New Year's resolution (yey).
+Three weeks in already and I'm still holding on to my New Year's resolution (yey).
 Welcome to the first update on my programming journey. 
 Only want to read about my Java (project name: Proc2X) or my Rust (project name: WaveTab) project? 
 Jump right into it:
@@ -184,7 +184,7 @@ I am no dsp guru, but my intuition for a dsp pipeline that extracts the notes pl
 4. Apply fast fourier transform on signal sections to extract frequencies
 5. Convert frequencies to notes (like a') or chords (like E minor)
 
-I imagine such a pipeline to have a bunch of pitfalls and difficult to tune towards different edge cases.
+I imagine such a pipeline to have a bunch of pitfalls and to be difficult to tune towards different edge cases.
 Because of that, I am also looking at the lazy way of doing things: machine learning.
 For this, I will (as a first attempt) treat the note extraction problem as a search problem and provide a genetic algorithm with the notes it is able to play and let it figure out which ones to play and when to play those.
 In this approach, I expect problems with decreasing amplitudes in the signal when a note is being held for a period of time.
@@ -192,7 +192,7 @@ When the algorithm just generates perfect signals from the inputs, there aren't 
 But I guess we will see what happens when we get to that point. In the long run, I aim at combining both approaches in some way to use the strengths of each approach.
 
 That being said, let's look at some code!
-So first off, we will add two dependencies we will need: *hound* (for loading wave files) and *num* (for some numeric traits).
+So first off, we will add two dependencies we will need: *hound* (for loading wave files) and *num* (for some numeric traits, a trait is a little bit like an interface).
 This is as simple as adding the following to our `Cargo.toml`.
 ```
 [dependencies]
@@ -232,7 +232,7 @@ mod analysis {
 This can be useful when we don't want to add source files for stuff like small sub modules.
 
 The last thing we have in our `lib.rs` is the definition of a struct named `Wavetab`, which will act like a facade for the library's functionality. 
-In Rust, we define class-like objects by first defining `struct` (this is kind of comparable to C++ structs, except all fields are private), which bundle a bunch of values.
+In Rust, we define class-like structures by first defining `struct` (this is kind of comparable to C++ structs, except all fields are private), which bundle a bunch of values.
 ```
 pub struct Wavetab {
     wave: Vec<i16>,
@@ -253,7 +253,7 @@ In Rust, function definitions start with the keyword `fn`, followed by the funct
 Knowing how to define a function, we want to associate four functions with *Wavetab*:
 1. A constructor `new` (the name *new* is by convention, it could be called anything)
 2. A convencience function `from_file` to create the struct with data from a file
-3. A getter function for the wave (which should return a immutbile reference to enable [borrowing](https://doc.rust-lang.org/book/second-edition/ch04-00-understanding-ownership.html) of the variable)
+3. A getter function for the wave (which should return a immutable reference to enable *borrowing* of the variable)
 4. The facade function `convert_wave` to do the conversion of the loaded signal.
 
 Our constructor is pretty unspectacular:
@@ -264,11 +264,60 @@ pub fn new(wave: Vec<i16>, sample_rate: u32) -> Wavetab {
 ```
 There are just a view things to note here:
 - We pass in the signal vector and the sampling rate
-- The way `wave` is passed, the created object will take ownership (I will explain this briefly [later](#ownership-and-borrowing) in this post) of the vector
+- The way `wave` is passed, the created instance will take *ownership* of the vector
 - Our parameters have exactly the same names as the values of our struct, in this situation, we can initialize the struct by typing `Wavetab { wave, sample_rate }` instead of `Wavetab { wave: wave, sample_rate: sample_rate }` (we will se that in our `from_file` function)
 - The last expression in a function that does not end with a `;` will be returned from the function. We also could have added the `return` keyword in front the expression.
 
-from file 
+In the last section, I've thrown two Rust buzzwords at you: *borrowing* and *ownership*.
+Before going through some more code, I want to elaborate a little bit on the concept of ownership in Rust (note that this won't be an extensive review, but much rather a very brief introduction on the topic. For further readings I want to refer to [The Book](https://doc.rust-lang.org/book/second-edition/ch04-00-understanding-ownership.html)).
+
+What is ownership?
+Well, in short, it is the way memory (and thus (e.g. struct) instances, values ("instances" of primitive types like integers) and references ("pointers")) is handled in Rust.
+It defines a very intuitive, yet strict set of rules on how you have to use and manage variables that you are creating at runtime.
+Through this rule set, the Rust compiler is able to detect and prevent common problems you may face in other languages, like dangling pointers or unintended mutation of the same instance from different locations.
+Further, it allows for detection (at least to some extend, which is far more than in any other language I know of) of possible race conditions in multi-threaded applications.
+On the other hand, many things that might lead to unintended behavior have to be wrapped in special structs (like the reference counting smart pointer `Rc`) or explicitly annotated with keywords (like `mut`), enabling you to find potential sources of error much faster.
+
+So, from my understanding, there are 3 major modes of ownership and borrowing:
+- taking ownership
+- immutable borrowing
+- mutable borrowing
+
+Let's look at some code, to see what these things are about:
+```
+let book = Book::new("Some book");
+
+borrow(&book);  // pass immutable reference (&)
+
+// time passes...
+
+get_back_borrowed_books();  // get back all borrowed books -> all immutable reference are deleted
+
+borrow_it_to_your_best_friends_infant(&mut book);  // pass mutable reference (&mut), there can always be only one at a time
+
+// more time passes...
+get_back_borrowed_books();
+
+donate(book);  // pass the instance itself -> transfer ownership
+```
+Imagine you own *Some book* and you've already read through it multiple times.
+At this point, you might not need it anymore.
+Also, you heard that one of your friends really wants to read this book, but cannot find it anywhere.
+Hence, because you are a nice person, you decide to borrow your copy of the book to your friend (`borrow(&book)`).
+Now, your friend ist able to read, but not modify (you don't do that to borrowed stuff), your book.
+Actually, in Rust you are a magician and *could* lend your book to multiple of your friends at the same time (just so you know that you are allowed to share multiple immutable references to an instance).
+During this period of time, you also are unable to modify your book (whilst it is still *your* book, you cannot just modify it, because it is at your friend's place).
+After some time, you want to get your book back, because another friend of yours wants to borrow your book for his little infant.
+You, as a wise person, decide to allow this friend to modify your book (because it is likely that the kid will do it).
+As you couldn't modify your book while borrowed by someone, no one could so so as well, thus you have to get your book back first, so that no one else has access to it.
+Now, you can share your book with your friend's infant (`borrow_it_to_your_best_friends_infant`), without the risk that other borrowers of your book might stumble upon missing (ripped apart) pages while reading.
+The kid now got an mutable reference to your book (and in general you can only have one mutable reference to an instance at the same time).
+More time passes, and you get your book back ones again.
+You look at this mess of book, that got a sweet new coloring and a few innovative half-pages and decide you don't want it anymore and `donate` it.
+By donating your book for charity, to transfer ownership of your book to the donatary.
+Now, you don't have access to the book anymore.
+
+Ok, so after this mess of an analogy for trying to explain ownership, maybe you should consult [The Book](https://doc.rust-lang.org/book/second-edition/ch04-00-understanding-ownership.html), and then we move on and look at our `from_file` function: 
 ```
 pub fn from_file(file_path: &str) -> Wavetab {
     let mut reader = match hound::WavReader::open(file_path) {
@@ -278,7 +327,7 @@ pub fn from_file(file_path: &str) -> Wavetab {
     let wav_spec = reader.spec();
     let samples: Vec<i16> = reader.samples::<i16>().map(|sample| {
         match sample {
-            Ok(s) => s as i16,
+            Ok(s) => s,
             Err(_) => panic!("Broken sample")
         }
     }).collect();
@@ -289,6 +338,26 @@ pub fn from_file(file_path: &str) -> Wavetab {
     }
 }
 ```
+There is a lot more going on there, so let's break this down.
+The only parameter for the function is a string (reference) holding the path to a wave file.
+We are borrowing the string passed to the functions, as we don't want to take ownership of it, nor do we want to modify it.
+The first thing to do in the function is to open the wave file using hound's `WavReader`.
+Here, we are using pattern matching (keyword `match`) to do some error handling.
+The function `hound::WavReader::open(...)` returns Rust's `Result<T, E>` enum ([link](https://doc.rust-lang.org/book/second-edition/ch09-02-recoverable-errors-with-result.html)), which returns the `WavReader` instance wrapped inside the `Ok` struct in case of success and the error wrapped in `Err` in a failure case (e.g. when provided an incorrect path).
+Hence, in the pattern matching block, we are extracting the `WavReader` instance in case of success or "throw an exception" (`panic!(...)` is the equivalent of raising an exception and terminating the program) in case of failure.
+Note that `reader` is a mutable variable here, because for some reason the function used further below (`reader.samples`) mutates the instance.
+The next is pretty straightforward: `reader.spec()` returns a struct that holds the information from the wave file header (like the sampling rate, encoding and stuff).
+Following this, we are reading the discretizised signal from the file using the `reader`, some functional programming stuff and pattern matching:
+1. We want to store all signal samples in a vector of 16 bit integers: `let samples: Vec<i16> = ...`
+2. Because of that, we want our reader to read the samples as 16 bit integers: `reader.samples::<i16>()`
+3. If we stopped at this point, we would get an compiler error, as `reader.samples::<i16>()` wrappes every sample in a `Result`, thus we have to unpack it
+.1 We can achieve that by using `map` (applies a given function to all elements of a collection), which takes a [closure](https://doc.rust-lang.org/book/second-edition/ch13-01-closures.html) as an argument.
+.2 The closure syntax is Rust looks like this: `|arguments| { body }`
+.3 So, our closure takes one sample as an argument and uses pattern matching (just like before) to unwrap the sample, while handling broken samples (there is also a function for `Result` called `unwrap` which could be used as well, but in case of an error, our programm would just panic (I know it does exactly this now, but we could also decide to just skip broken samples))
+4. The last thing to do: `reader.samples::<i16>()` actually returns an iterator (I think), so we have to call the `collect` function, to turn it into a vector.
+
+As a final step, we create the instance of our struct with the values read from the file.
+
 
 asdf
 
@@ -299,10 +368,6 @@ asdf
 
 ![wave plot](/images/blog/02_derusting/wave.png)
 
-### Ownership and Borrowing
-- not going into too much detail
-- refer to rust book
-- brief introduction to ownership and borrowing
 
 
 <!--
