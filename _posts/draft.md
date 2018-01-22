@@ -358,21 +358,27 @@ Following this, we are reading the discretizised signal from the file using the 
 
 As a final step, we create the instance of our struct with the values read from the file.
 
-
-
-
+Now that we have defined our library entry point, there are two topics left I want to talk about in this post.
+The first thing is *extension traits*.
+Having programmed in C# for a while, I came to really extension methods, that can be used to extend already existing classes with additional functions, which are then treated as if they were part of the class.
+In Rust you can achieve the same, so I decided it might be handy to extend `Vec<T>` by a few convenience functions for our project.
+You can see all of the functions I have added so far in this piece of code:
 ```
-use num::traits::Signed;
-
 pub trait ArrExt<T> {
     fn min_val(&self) -> &T; // calculates the minimum value of the slice
-    fn max_val(&self) -> &T; // calculates the maximum value of the slcie
-    fn abs(&self) -> Vec<T>;
+    fn max_val(&self) -> &T; // calculates the maximum value of the slice
+    fn abs(&self) -> Vec<T>; // replaces every element with its abolsute value
 
     // inplace functions
     fn abs_inplace(&mut self);
 }
+```
+In Rust, traits define a bunch of functions (kind of like an interface) for an unknown type.
+You can then implement the functions of a trait for a specific type (also types from the standard library), hence extending the types functionality.
+So, in the last code fragment, we are defining a generic trait named `ArrExt` with four functions.
 
+Next, I will show the implementation of one of those functions and point out a few things.
+```
 impl<T: PartialOrd + Signed> ArrExt<T> for [T] {  
     fn min_val(&self) -> &T {
         let min_val = self.iter().fold(None, |min, x| match min {
@@ -386,43 +392,69 @@ impl<T: PartialOrd + Signed> ArrExt<T> for [T] {
     // ...
 }
 ```
+The first interesting thing to see occurs directly in the first line `impl<T: PartialOrd + Signed> ArrExt<T> for [T]`.
+Let's break this down:
+- `impl<T: PartialOrd + Signed>`: This defines a so called [trait bound](https://rustbyexample.com/generics/bounds.html) for our generic type `T`. In our project we are most likely only concerned with numeric data, this is also true for the functions defined in our `ArrExt` trait, thus we have to ensure that `T` is of some numeric type and implements some needed functionality, like ordering functions (`<, >, <=, >=`, ensured by the `PartialOrd` trait) and mathematical functions (in our case `abs`, ensured by the `Signed` trait, which is actually a trait from the extern crate *num*)
+- `impl<...> ArrayExt<T> for [T]`: This means we are implementing our trait functions for the array of type `T`. So, why for arrays and not for vectors, like we wanted to? The answer is pretty easy. From my understanding, an array is a more abstract concept than a vector. For example, if we have a function that expects a vector as an argument, we can only pass vectors to it, on the other hand, a function that expects an array as an argument can either take vectors, slices (kinda like sub-vectors, think of python slices) or arrays!
 
+Further, the code shows the implementation of the `min_val` function.
+There isn't really much new or fancy to talk about here.
+It uses the fold operator (which is a common operation in functional programming) to collapse the array into a single value.
+Maybe a word or two about `Some` and `None`.
+There is no `null` in Rust, instead you can use [`Option<T>`](https://rustbyexample.com/std/option.html) enum, which wraps and returns a value of type `T` in `Some(value)` if there is a value or returns `None` if there is none.
+When folding to find the minimum value of the array, we have to provide an initial value to compare against, so we could either provide a very high value that we expect to be higher than the highest value in the array (which is not really an elegant solution), or we can start with `None` and use pattern matching to just use the value, when comparing to `None` in the first step of the fold.
+As the result of our fold is then of type `Option<T>`, we are calling `unwrap` to obtain the actual value.
+Note: this might cause a panic, if the array is empty, as the value then be `None`. 
+
+The second thing I want to talk about is something visual: plotting.
+As available plotting crates for Rust are not too satisfying, I figured, I'd just run python in a subprocess and use matplotlib for some plotting.
+Although not really performance oriented, it gets the job done, and performance isn't really a concern as of right now.
+
+So, the thing I wanted to plot is the discretizised signal I have just loaded from a wave file.
+To plot this using pythons matplotlib, we have to perform several steps, given the signal as a vector (reference) `wave`:
+1. Convert each value of the vector to a String: `wave.iter().map(|i| i.to_string()).collect()`
+2. Build two python lists as Strings (using a loop)
+    - `x_arr`: One containing the values from `0` to `length(wave) - 1`, this will look like this: `"[0,1,2]"` for a vector of length `3`.
+    - `y_arr`: The other one contains the String representation of the actual values
+3. Build the process execution String. Here we write our python script to execute: `let exec_str = format!("import matplotlib.pyplot as plt\nplt.plot({}, {})\nplt.show()", &x_arr[..], &y_arr[..]);` 
+4. Spawn a new process that runs python and set up a pipe: `let mut process = Command::new("python").stdin(Stdio::piped()).spawn()`
+5. Write our python code to the python process' stdin to issue our plot drawing: `stdin.write_all(exec_str.as_bytes())`
+6. Wait for the process to finish, otherwise we won't see anything: `process.wait().unwrap();`
+
+Putting it all together and adding respective error handling, we end up with something like this: 
 ```
 pub fn plot_wave<T: ToString>(wave: &Vec<T>) {
-        let wave_val_str: Vec<String> = wave.iter().map(|i| i.to_string()).collect();
+    let wave_val_str: Vec<String> = wave.iter().map(|i| i.to_string()).collect();
 
-        let mut x_arr = String::from("[");
-        let mut y_arr = String::from("[");
-        for (i, st) in wave_val_str.iter().enumerate() {
-            x_arr.push_str(&i.to_string()[..]);
-            y_arr.push_str(&st[..]);
-            if i < wave_val_str.len() - 1 {
-                x_arr.push_str(",");
-                y_arr.push_str(",");
-            } else {
-                x_arr.push_str("]");
-                y_arr.push_str("]");
-            }
+    let mut x_arr = String::from("[");
+    let mut y_arr = String::from("[");
+    for (i, st) in wave_val_str.iter().enumerate() {
+        x_arr.push_str(&i.to_string()[..]);
+        y_arr.push_str(&st[..]);
+        if i < wave_val_str.len() - 1 {
+            x_arr.push_str(",");
+            y_arr.push_str(",");
+        } else {
+            x_arr.push_str("]");
+            y_arr.push_str("]");
         }
+    }
 
-        // https://rustbyexample.com/std_misc/process/pipe.html
-        // https://doc.rust-lang.org/std/process/struct.Stdio.html#method.piped
-        // https://rustbyexample.com/std_misc/process/wait.html
-        // set a stdin pipe to pipe our commands to the process running python (pipe to python process stdin)
-        let exec_str = format!("import matplotlib.pyplot as plt\nplt.plot({}, {})\nplt.show()", &x_arr[..], &y_arr[..]);
-        let mut process = match Command::new("python").stdin(Stdio::piped()).spawn() {
-            Err(why) => panic!("Couldn't spawn python process: {}", why.description()),
-            Ok(process) => process
-        };
-        {
-            let ref mut stdin = process.stdin.as_mut().unwrap();
-            stdin.write_all(exec_str.as_bytes()).expect("Failed to write python command");
-            stdin.write_all(b"\n").expect("Failed to write python command");
-        }
-        process.wait().unwrap();
+    // set a stdin pipe to pipe our commands to the process running python (pipe to python process stdin)
+    let exec_str = format!("import matplotlib.pyplot as plt\nplt.plot({}, {})\nplt.show()", &x_arr[..], &y_arr[..]);
+    let mut process = match Command::new("python").stdin(Stdio::piped()).spawn() {
+        Err(why) => panic!("Couldn't spawn python process: {}", why.description()),
+        Ok(process) => process
+    };
+    {
+        let ref mut stdin = process.stdin.as_mut().unwrap();
+        stdin.write_all(exec_str.as_bytes()).expect("Failed to write python command");
+        stdin.write_all(b"\n").expect("Failed to write python command");
+    }
+    process.wait().unwrap();
 }
 ```
-
+If we now open up our `main.rs` and import our library, we can load a signal from a wave file and plot it using python:
 ```
 extern crate wavetab;
 
@@ -440,19 +472,18 @@ fn main() {
     plotting::plot_wave(wt.wave());
 }
 ```
-
-asdf
-
-- start with audio signal loaded from wav: hound
-- good when there's something to look at: python plot (piped process)
-- extending classes, trait constraints
-- vector vs array vs slice
+In this piece of code, we are passing the path to our wave file as an argument to the main function (accessible via `env::args`).
+When running this by calling `cargo run data/short_seq.wav` from our console, we get to see a plot like this:
 
 ![wave plot](/images/blog/02_derusting/wave.png)
 
-
+All in all, even with the compiler complaining about my code on a frequent basis, I really enjoy programming in Rust so far.
 
 <!--
+comments!!
+
+
+
 TODO bis zu diesem Post
 
 Java
