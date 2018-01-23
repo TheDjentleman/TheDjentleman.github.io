@@ -142,7 +142,7 @@ Also I decided to start off with most of the procedural generation stuff before 
 I guess that is all for Java for now, so let's move on to my Rust project.
 
 ## Rust Project: WaveTab
-The start of my Rust project ([github repository](https://github.com/xy7e/journey-2018-rust-wavetab)), where I am trying to build a tool that converts raw audio (waves) into guitar tabs, started somewhat similar to my Java project: **Lots** of reading!
+My Rust project ([github repository](https://github.com/xy7e/journey-2018-rust-wavetab)), where I am trying to build a tool that converts raw audio (waves/signals) into guitar tabs, started somewhat similar to my Java project: With **lots** of reading!
 Also, as I just started learning the language, there isn't as much code here yet, at least compared to the Java project.
 
 To begin with, I've read through a large portion of *The Book* (as they like to call it), namely [The Rust Programming Language](https://doc.rust-lang.org/book/second-edition/).
@@ -150,7 +150,8 @@ It is filled with a lot of information and small examples and I think it is very
 When I started coding, I also found [rustbyexample](https://rustbyexample.com) to be a very good resource on how to use the standard library and the language in general.
 
 So, what are my first impressions on the language and what have I achieved so far?
-First off, I really like *cargo*, Rust's build system and package manager.
+First off, I really like *cargo*, Rust's build system and package manager, as it is very easy to use.
+Cargo is also used for creating projects, which is helpful because it also creates the necessary project structure for you.
 Rust enforces a specific project structure, but it is pretty straight forward:
 - In the project root directory, you have a file (`Cargo.toml`) that contains information about the project and external dependencies, as well as a folder named *src* where you put (you guessed it) your source files
 - You wan't an executable? Then you need a source file named `main.rs` 
@@ -165,8 +166,8 @@ When you are looking for 3rd party libs (so called *crates*, I think), you can j
 Next, I want to give a very brief description on how I've set up my programming environment and the project itself.
 Afterwards we will look at some code ("Warning": In this post I will try to explain some of the basic concepts in Rust, thus this section will end up pretty lengthy; For the posts to come, I will focus more on the exciting stuff I coded).
 
-As there isn't really a standard IDE for Rust yet, I looked at the chart on a website called [areweideyet.com](https://areweideyet.com/), to see which code editors and IDEs already plugins that support Rust.
-From the pretty extensive list, I chose to go with Visual Studio Code, because I kinda like that editor and there is a comprehensive Rust plugin for that editor.
+As there isn't really a standard IDE for Rust yet, I looked at the chart on a website called [areweideyet.com](https://areweideyet.com/), to see which code editors and IDEs already have plugins that support Rust.
+From the pretty extensive list, I chose to go with Visual Studio Code, because I kinda like that editor and there is a comprehensive Rust plugin for that editor (although I belief only parts of the plugin are working for me right now, but it wasn't too bad until now).
 
 Having everything installed, the first thing to do is to create a new project.
 I decided to code my converter as a library, with an eventual use as a backend for a c# gui at a later stage, so we simply start up our cmd (on windows) in a directory of our choice and run `cargo new wavetab`.
@@ -176,11 +177,11 @@ For playing around with our library (without the need of our graphical frontend)
 In this way, we can either build the library or run `main.rs` by calling `cargo build` or `cargo run` respectively (from the project's root folder in a cmd window).
 I also created a folder called `data` in which I will store some *wave* files with different guitar recordings for testing (as of right now there is only one, containing a short note sequence).
 
-Before we dive into some code, I want to some up my plans for approaching the problem of converting a recording into a guitar tab.
+Before we dive into some code, I want to sum up my plans for approaching the problem of converting a recording into a guitar tab.
 I'm planning to look at it from two perspectives: classic dsp and machine learning.
-I am no dsp guru, but my intuition for a dsp pipeline that extracts the notes played from the recorded wave (I will call this *signal* in the remainder of this post) goes something like this:
+I am no dsp guru, but my intuition for a dsp pipeline that extracts the notes played from the recorded wave (I will call this (discrete) *signal* in the remainder of this post) goes something like this:
 1. Eventually apply some filters to the signal
-2. Identify points of time a new note or chord is being played
+2. Identify the points of time a new note or chord is being played
 3. Subdivide the signal to separate subsequently played notes or chords
 4. Apply fast fourier transform on signal sections to extract frequencies
 5. Convert frequencies to notes (like a') or chords (like E minor)
@@ -189,8 +190,9 @@ I imagine such a pipeline to have a bunch of pitfalls and to be difficult to tun
 Because of that, I am also looking at the lazy way of doing things: machine learning.
 For this, I will (as a first attempt) treat the note extraction problem as a search problem and provide a genetic algorithm with the notes it is able to play and let it figure out which ones to play and when to play those.
 In this approach, I expect problems with decreasing amplitudes in the signal when a note is being held for a period of time.
-When the algorithm just generates perfect signals from the inputs, there aren't any descreasing amplitudes, which might affect the loss calculations in the optimzation.
-But I guess we will see what happens when we get to that point. In the long run, I aim at combining both approaches in some way to use the strengths of each approach.
+When the algorithm just generates perfect signals from the inputs, there aren't any decreasing amplitudes, which might affect the loss calculations in the optimzation.
+But I guess we will see what happens when we get to that point. 
+In the long run, I aim at combining both approaches in some way to use the strengths of each approach.
 
 That being said, let's look at some code!
 So first off, we will add two dependencies we will need: *hound* (for loading wave files) and *num* (for some numeric traits, a trait is a little bit like an interface).
@@ -207,7 +209,7 @@ extern crate hound;
 extern crate num;
 ```
 
-Next, I want to split the library's functionality into different modules:
+Next, I wanted to split the library's functionality into different modules:
 - analysis: parses input signal
 - tab_generation: generates a guitar tab from analysed signal
 - utils: general utility, extension methods and so on
@@ -221,7 +223,7 @@ mod tab_generation;
 mod utils;
 ```
 Here, `mod` is the keyword for, you guessed it, a module.
-By adding `pub` in front of the plotting module, we make it accessible for outside of the library (i.e. for callers of the library; In the current state, I am calling the plotting function from outside the library).
+By adding `pub` in front of the plotting module, we make it accessible outside of the library (i.e. for callers of the library; In the current state, I am calling the plotting function from outside the library).
 With `mod <module-name>`, we are just declaring, that there is a module with the given name.
 Because of that, we also have to add the following source files: `plotting.rs`, `analysis.rs`, `tab_generation.rs` and `utils.rs` (the file names have to match the module names).
 As an alternative, we could have implemented the modules in the `lib.rs` file, by also adding the module functionality:
@@ -233,15 +235,15 @@ mod analysis {
 This can be useful when we don't want to add source files for stuff like small sub modules.
 
 The last thing we have in our `lib.rs` is the definition of a struct named `Wavetab`, which will act like a facade for the library's functionality. 
-In Rust, we define class-like structures by first defining `struct` (this is kind of comparable to C++ structs, except all fields are private), which bundle a bunch of values.
+In Rust, we define class-like structures by first defining a `struct` (this is kind of comparable to C++ structs, except all fields are private), which bundle a bunch of values.
 ```
 pub struct Wavetab {
     wave: Vec<i16>,
     sample_rate: u32
 }
 ```
-So, our Wavetab struct consists of field named *wave*, which is a vector (a dynamically sized array; `Vec<T>` declares a generic type, just like in many other languages), holding 16 bit integers (`i16`), and a field named *sample_rate*, which is an unsigned 32 bit integer.
-In *wave* we will store the input wave signal and in *sample_rate*, the sampling rate at which the continuous audio signal was sampled.
+So, our Wavetab struct consists of a field named *wave*, which is a vector (a dynamically sized array; `Vec<T>` declares a generic type, just like in many other languages), holding 16 bit integers (`i16`), and a field named *sample_rate*, which is an unsigned 32 bit integer.
+In *wave* we will store the input signal and in *sample_rate*, the sampling rate at which the original continuous audio signal was sampled.
 Also, the struct must be public, to be accessible from outside the library.
 
 Now, to add callable functions to a struct, we *associate* functions with it  
@@ -253,7 +255,7 @@ impl Wavetab {
 In Rust, function definitions start with the keyword `fn`, followed by the functions name, its parameters and then the return type after a `->`.
 Knowing how to define a function, we want to associate four functions with *Wavetab*:
 1. A constructor `new` (the name *new* is by convention, it could be called anything)
-2. A convencience function `from_file` to create the struct with data from a file
+2. A convenience function `from_file` to create the struct with data from a file
 3. A getter function for the wave (which should return a immutable reference to enable *borrowing* of the variable)
 4. The facade function `convert_wave` to do the conversion of the loaded signal.
 
@@ -266,11 +268,11 @@ pub fn new(wave: Vec<i16>, sample_rate: u32) -> Wavetab {
 There are just a view things to note here:
 - We pass in the signal vector and the sampling rate
 - The way `wave` is passed, the created instance will take *ownership* of the vector
-- Our parameters have exactly the same names as the values of our struct, in this situation, we can initialize the struct by typing `Wavetab { wave, sample_rate }` instead of `Wavetab { wave: wave, sample_rate: sample_rate }` (we will se that in our `from_file` function)
+- Our parameters have exactly the same names as the values of our struct. In this situation, we can initialize the struct by typing `Wavetab { wave, sample_rate }` instead of `Wavetab { wave: wave, sample_rate: sample_rate }` (we will see that in our `from_file` function)
 - The last expression in a function that does not end with a `;` will be returned from the function. We also could have added the `return` keyword in front the expression.
 
-In the last section, I've thrown two Rust buzzwords at you: *borrowing* and *ownership*.
-Before going through some more code, I want to elaborate a little bit on the concept of ownership in Rust (note that this won't be an extensive review, but much rather a very brief introduction on the topic. For further readings I want to refer to [The Book](https://doc.rust-lang.org/book/second-edition/ch04-00-understanding-ownership.html)).
+So, in the last section I've thrown two Rust buzzwords at you: *borrowing* and *ownership*.
+Before going through some more code, I want to elaborate a little bit on the concept of ownership in Rust (note that this won't be an extensive review, but much rather a brief introduction on the topic. For further readings I want to refer to [The Book](https://doc.rust-lang.org/book/second-edition/ch04-00-understanding-ownership.html)).
 
 What is ownership?
 Well, in short, it is the way memory (and thus (e.g. struct) instances, values ("instances" of primitive types like integers) and references ("pointers")) is handled in Rust.
@@ -305,17 +307,17 @@ Imagine you own *Some book* and you've already read through it multiple times.
 At this point, you might not need it anymore.
 Also, you heard that one of your friends really wants to read this book, but cannot find it anywhere.
 Hence, because you are a nice person, you decide to borrow your copy of the book to your friend (`borrow(&book)`).
-Now, your friend ist able to read, but not modify (you don't do that to borrowed stuff), your book.
+Now, your friend is able to read, but not modify (you don't do that to borrowed stuff), your book.
 Actually, in Rust you are a magician and *could* lend your book to multiple of your friends at the same time (just so you know that you are allowed to share multiple immutable references to an instance).
 During this period of time, you also are unable to modify your book (whilst it is still *your* book, you cannot just modify it, because it is at your friend's place).
 After some time, you want to get your book back, because another friend of yours wants to borrow your book for his little infant.
 You, as a wise person, decide to allow this friend to modify your book (because it is likely that the kid will do it).
-As you couldn't modify your book while borrowed by someone, no one could so so as well, thus you have to get your book back first, so that no one else has access to it.
+As you couldn't modify your book while borrowed by someone, no one could do so as well, thus you have to get your book back first, so that no one else has access to it.
 Now, you can share your book with your friend's infant (`borrow_it_to_your_best_friends_infant`), without the risk that other borrowers of your book might stumble upon missing (ripped apart) pages while reading.
-The kid now got an mutable reference to your book (and in general you can only have one mutable reference to an instance at the same time).
-More time passes, and you get your book back ones again.
-You look at this mess of book, that got a sweet new coloring and a few innovative half-pages and decide you don't want it anymore and `donate` it.
-By donating your book for charity, to transfer ownership of your book to the donatary.
+The kid now got a mutable reference to your book (and in general you can only have one mutable reference to an instance at the same time).
+More time passes, and you get your book back once again.
+You look at this mess of book, that got a sweet new coloring and a few innovative half-pages, and decide you don't want it anymore and `donate` it.
+By donating your book for charity, you transfer ownership of your book to the donatary.
 Now, you don't have access to the book anymore.
 
 Ok, so after this mess of an analogy for trying to explain ownership, maybe you should consult [The Book](https://doc.rust-lang.org/book/second-edition/ch04-00-understanding-ownership.html), and then we move on and look at our `from_file` function: 
@@ -347,21 +349,21 @@ Here, we are using pattern matching (keyword `match`) to do some error handling.
 The function `hound::WavReader::open(...)` returns Rust's `Result<T, E>` enum ([link](https://doc.rust-lang.org/book/second-edition/ch09-02-recoverable-errors-with-result.html)), which returns the `WavReader` instance wrapped inside the `Ok` struct in case of success and the error wrapped in `Err` in a failure case (e.g. when provided an incorrect path).
 Hence, in the pattern matching block, we are extracting the `WavReader` instance in case of success or "throw an exception" (`panic!(...)` is the equivalent of raising an exception and terminating the program) in case of failure.
 Note that `reader` is a mutable variable here, because for some reason the function used further below (`reader.samples`) mutates the instance.
-The next is pretty straightforward: `reader.spec()` returns a struct that holds the information from the wave file header (like the sampling rate, encoding and stuff).
-Following this, we are reading the discretizised signal from the file using the `reader`, some functional programming stuff and pattern matching:
+The next step is pretty straightforward: `reader.spec()` returns a struct that holds the information from the wave file header (like the sampling rate, encoding and stuff).
+Following this, we are reading the (discrete) signal from the file using the `reader`, some functional programming stuff and pattern matching:
 1. We want to store all signal samples in a vector of 16 bit integers: `let samples: Vec<i16> = ...`
 2. Because of that, we want our reader to read the samples as 16 bit integers: `reader.samples::<i16>()`
 3. If we stopped at this point, we would get an compiler error, as `reader.samples::<i16>()` wrappes every sample in a `Result`, thus we have to unpack it
     - We can achieve that by using `map` (applies a given function to all elements of a collection), which takes a [closure](https://doc.rust-lang.org/book/second-edition/ch13-01-closures.html) as an argument.
     - The closure syntax is Rust looks like this: `|arguments| { body }`
-    - So, our closure takes one sample as an argument and uses pattern matching (just like before) to unwrap the sample, while handling broken samples (there is also a function for `Result` called `unwrap` which could be used as well, but in case of an error, our programm would just panic (I know it does exactly this now, but we could also decide to just skip broken samples))
+    - So, our closure takes one sample as an argument and uses pattern matching (just like before) to unwrap the sample, while handling broken samples (there is also a function for `Result`, called `unwrap`, which could be used as well, but in case of an error, our programm would just panic (I know it does exactly this now, but we could also decide to just skip broken samples))
 4. The last thing to do: `reader.samples::<i16>()` actually returns an iterator (I think), so we have to call the `collect` function, to turn it into a vector.
 
 As a final step, we create the instance of our struct with the values read from the file.
 
 Now that we have defined our library entry point, there are two topics left I want to talk about in this post.
 The first thing is *extension traits*.
-Having programmed in C# for a while, I came to really extension methods, that can be used to extend already existing classes with additional functions, which are then treated as if they were part of the class.
+Having programmed in C# for a while, I came to really like extension methods, which can be used to extend already existing classes with additional functions, which are then treated as if they were part of the class.
 In Rust you can achieve the same, so I decided it might be handy to extend `Vec<T>` by a few convenience functions for our project.
 You can see all of the functions I have added so far in this piece of code:
 ```
