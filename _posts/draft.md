@@ -504,15 +504,9 @@ So, we finally made it (phew), that's all for now.
 Stay tuned for my next update and cheers!
 
 <!--
-code comments!!
-
-
 TODO bis zu diesem Post
 
 Java
-- einfache 3D Szene mit Kamera und ein paar Würfeln (wie im learnopengl tutorial, nur dass hier direkt eine Mesh Klasse benutzt werden soll)
--- https://learnopengl.com/#!Getting-started/Camera
-DANACH
 save scene as number of objects
 scene in GameLogic klasse stecken oder so? -> alles mögliche aus Proc2X rausschieben
 
