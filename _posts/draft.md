@@ -404,22 +404,22 @@ Further, the code shows the implementation of the `min_val` function.
 There isn't really much new or fancy to talk about here.
 It uses the fold operator (which is a common operation in functional programming) to collapse the array into a single value.
 Maybe a word or two about `Some` and `None`.
-There is no `null` in Rust, instead you can use [`Option<T>`](https://rustbyexample.com/std/option.html) enum, which wraps and returns a value of type `T` in `Some(value)` if there is a value or returns `None` if there is none.
+There is no `null` in Rust, instead you can use the [`Option<T>`](https://rustbyexample.com/std/option.html) enum, which returns a value of type `T` wrapped in `Some(value)` if there is a value or returns `None` if there is none.
 When folding to find the minimum value of the array, we have to provide an initial value to compare against, so we could either provide a very high value that we expect to be higher than the highest value in the array (which is not really an elegant solution), or we can start with `None` and use pattern matching to just use the value, when comparing to `None` in the first step of the fold.
 As the result of our fold is then of type `Option<T>`, we are calling `unwrap` to obtain the actual value.
-Note: this might cause a panic, if the array is empty, as the value then be `None`. 
+Note: this might cause a panic, if the array is empty, as the value will then be `None`. 
 
 The second thing I want to talk about is something visual: plotting.
-As available plotting crates for Rust are not too satisfying, I figured, I'd just run python in a subprocess and use matplotlib for some plotting.
-Although not really performance oriented, it gets the job done, and performance isn't really a concern as of right now.
+As available plotting crates for Rust are not too satisfying, I figured I'd just run python in a subprocess and use matplotlib for some plotting.
+Although not really performance oriented, it gets the job done, and performance isn't really a concern as of right now anyway.
 
-So, the thing I wanted to plot is the discretizised signal I have just loaded from a wave file.
+So, the thing I wanted to plot is the discrete signal I have just loaded from a wave file.
 To plot this using pythons matplotlib, we have to perform several steps, given the signal as a vector (reference) `wave`:
 1. Convert each value of the vector to a String: `wave.iter().map(|i| i.to_string()).collect()`
-2. Build two python lists as Strings (using a loop)
+2. Build two python lists as Strings (e.g. using a loop)
     - `x_arr`: One containing the values from `0` to `length(wave) - 1`, this will look like this: `"[0,1,2]"` for a vector of length `3`.
     - `y_arr`: The other one contains the String representation of the actual values
-3. Build the process execution String. Here we write our python script to execute: `let exec_str = format!("import matplotlib.pyplot as plt\nplt.plot({}, {})\nplt.show()", &x_arr[..], &y_arr[..]);` 
+3. Build the process' execution string. Here we write our python script to execute: `let exec_str = format!("import matplotlib.pyplot as plt\nplt.plot({}, {})\nplt.show()", &x_arr[..], &y_arr[..]);` 
 4. Spawn a new process that runs python and set up a pipe: `let mut process = Command::new("python").stdin(Stdio::piped()).spawn()`
 5. Write our python code to the python process' stdin to issue our plot drawing: `stdin.write_all(exec_str.as_bytes())`
 6. Wait for the process to finish, otherwise we won't see anything: `process.wait().unwrap();`
@@ -476,11 +476,18 @@ use wavetab::Wavetab; // bring the struct into scope
 use wavetab::plotting; // plotting utils
 
 fn main() {
+    // collect provided arguments
     let args: Vec<String> = env::args().collect();
     println!("{:?}", args);
+    
+    // we pass the one argument: the file path
+    // the first entry in args is the path to the executable, thus the argument we've provided is at index 1
     let file_path = &args[1];
 
+    // create a Wavetab instance from the given wave file
     let wt = Wavetab::from_file(file_path);
+    
+    // plot the loaded wave
     plotting::plot_wave(wt.wave());
 }
 ```
