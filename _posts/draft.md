@@ -8,6 +8,7 @@ github_comments_issueid: "2"
 # Programming Journey 2018 - Derusting some Java and rusting some Rust
 Three weeks in already and I'm still holding on to my New Year's resolution (yey).
 Welcome to the first update on my programming journey. 
+
 Only want to read about my Java (project name: Proc2X) or my Rust (project name: WaveTab) project? 
 Jump right into it:
 - [Java Proc2X](#java-project-proc2x)
