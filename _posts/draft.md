@@ -162,7 +162,7 @@ When you are looking for 3rd party libs (so called *crates*, I think), you can j
 
 ### Project Setup and Code
 Next, I want to give a very brief description on how I've set up my programming environment and the project itself.
-Afterwards we will look at some code.
+Afterwards we will look at some code ("Warning": In this post I will try to explain some of the basic concepts in Rust, thus this section will end up pretty lengthy; For the posts to come, I will focus more on the exciting stuff I coded).
 
 As there isn't really a standard IDE for Rust yet, I looked at the chart on a website called [areweideyet.com](https://areweideyet.com/), to see which code editors and IDEs already plugins that support Rust.
 From the pretty extensive list, I chose to go with Visual Studio Code, because I kinda like that editor and there is a comprehensive Rust plugin for that editor.
@@ -351,9 +351,9 @@ Following this, we are reading the discretizised signal from the file using the 
 1. We want to store all signal samples in a vector of 16 bit integers: `let samples: Vec<i16> = ...`
 2. Because of that, we want our reader to read the samples as 16 bit integers: `reader.samples::<i16>()`
 3. If we stopped at this point, we would get an compiler error, as `reader.samples::<i16>()` wrappes every sample in a `Result`, thus we have to unpack it
-.1 We can achieve that by using `map` (applies a given function to all elements of a collection), which takes a [closure](https://doc.rust-lang.org/book/second-edition/ch13-01-closures.html) as an argument.
-.2 The closure syntax is Rust looks like this: `|arguments| { body }`
-.3 So, our closure takes one sample as an argument and uses pattern matching (just like before) to unwrap the sample, while handling broken samples (there is also a function for `Result` called `unwrap` which could be used as well, but in case of an error, our programm would just panic (I know it does exactly this now, but we could also decide to just skip broken samples))
+    - We can achieve that by using `map` (applies a given function to all elements of a collection), which takes a [closure](https://doc.rust-lang.org/book/second-edition/ch13-01-closures.html) as an argument.
+    - The closure syntax is Rust looks like this: `|arguments| { body }`
+    - So, our closure takes one sample as an argument and uses pattern matching (just like before) to unwrap the sample, while handling broken samples (there is also a function for `Result` called `unwrap` which could be used as well, but in case of an error, our programm would just panic (I know it does exactly this now, but we could also decide to just skip broken samples))
 4. The last thing to do: `reader.samples::<i16>()` actually returns an iterator (I think), so we have to call the `collect` function, to turn it into a vector.
 
 As a final step, we create the instance of our struct with the values read from the file.
@@ -424,13 +424,20 @@ To plot this using pythons matplotlib, we have to perform several steps, given t
 Putting it all together and adding respective error handling, we end up with something like this: 
 ```
 pub fn plot_wave<T: ToString>(wave: &Vec<T>) {
+    // map every vector element to its string representation
     let wave_val_str: Vec<String> = wave.iter().map(|i| i.to_string()).collect();
 
+    // build python arrays [a, b, c, ...]
     let mut x_arr = String::from("[");
     let mut y_arr = String::from("[");
+
+    // iterate over all elements of our array
+    // enumerate returns a tuple of (index, current value), just like in python
     for (i, st) in wave_val_str.iter().enumerate() {
-        x_arr.push_str(&i.to_string()[..]);
-        y_arr.push_str(&st[..]);
+        x_arr.push_str(&i.to_string()[..]);  // push the index (as a string slice &[]) to the x array
+        y_arr.push_str(&st[..]);  // push the value to the y array (the slicing is not necessary here, but I do it for consistency)
+
+        // add a comma separator or a closing square brackets
         if i < wave_val_str.len() - 1 {
             x_arr.push_str(",");
             y_arr.push_str(",");
@@ -440,18 +447,20 @@ pub fn plot_wave<T: ToString>(wave: &Vec<T>) {
         }
     }
 
-    // set a stdin pipe to pipe our commands to the process running python (pipe to python process stdin)
+    // build a string that contains our python code, using the format macro (https://rustbyexample.com/hello/print.html)
     let exec_str = format!("import matplotlib.pyplot as plt\nplt.plot({}, {})\nplt.show()", &x_arr[..], &y_arr[..]);
+
+    // set a stdin pipe to pipe our commands to the process running python (pipe to python process stdin)
     let mut process = match Command::new("python").stdin(Stdio::piped()).spawn() {
         Err(why) => panic!("Couldn't spawn python process: {}", why.description()),
         Ok(process) => process
     };
     {
-        let ref mut stdin = process.stdin.as_mut().unwrap();
-        stdin.write_all(exec_str.as_bytes()).expect("Failed to write python command");
-        stdin.write_all(b"\n").expect("Failed to write python command");
+        let ref mut stdin = process.stdin.as_mut().unwrap();  // get the process' stdin
+        stdin.write_all(exec_str.as_bytes()).expect("Failed to write python command");  // write our python script
+        stdin.write_all(b"\n").expect("Failed to write python command");  // close it out with a newline
     }
-    process.wait().unwrap();
+    process.wait().unwrap();  // wait for the process to exit
 }
 ```
 If we now open up our `main.rs` and import our library, we can load a signal from a wave file and plot it using python:
@@ -477,11 +486,15 @@ When running this by calling `cargo run data/short_seq.wav` from our console, we
 
 ![wave plot](/images/blog/02_derusting/wave.png)
 
-All in all, even with the compiler complaining about my code on a frequent basis, I really enjoy programming in Rust so far.
+With this plot, I will close this post's section of Rust.
+All in all, even with the compiler complaining about my code on a frequent basis, I really enjoy programming in Rust so far, and I am looking forward to developing my project in it.
+
+So, we finally made it (phew), that's all for now.
+
+Stay tuned for my next update and cheers!
 
 <!--
-comments!!
-
+code comments!!
 
 
 TODO bis zu diesem Post
