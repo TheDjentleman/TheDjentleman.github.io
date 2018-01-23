@@ -67,7 +67,7 @@ Following this, I have changed the implementation to process input and render as
 Further, I have added a second function to update the game logic, which is also (like render) called as often as possible.
 Finally, the game loop looks something like this:
 
-```
+```java
 while (true) {
     long current = System.nanoTime();
     long deltaNanoTime = current - previous;
@@ -98,7 +98,7 @@ The other thing I just have to point out here is my first encounter with *JOML*,
 Look at the following scenario: For my camera, I've set up three vectors (as suggested [here](https://learnopengl.com/#!Getting-started/Camera)), `forward`, `up` and `right`, which point in the direction they are named, while taking the camera's rotation (`pitch` and `yaw`) into consideration.
 With such an approach, we have to recalculate these vectors everytime `pitch` or `yaw` changes, so I ported the C++ code directly to Java using JOML instead of glm.
 Then it looked like this:
-```
+```java
 forward.x = (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
 forward.y = (float)Math.sin(Math.toRadians(pitch));
 forward.z = (float)(Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
@@ -118,7 +118,7 @@ Even on the main page of the [JOML github](https://github.com/JOML-CI/JOML) it r
 
 From there, it was clear to me, how to do the stuff I want to do.
 Finally, one way of implementing it correctly, would be this:
-```
+```java
 forward.x = (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
 forward.y = (float)Math.sin(Math.toRadians(pitch));
 forward.z = (float)(Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
