@@ -63,7 +63,7 @@ One of these is the game loop.
 On this topic, the book suggests using a *fixed time step* game loop (with the additional possibility to skip frames when needed).
 When using such a game loop, you are forcing all updates and render calls to run a fixed number of times per second.
 While this is a very robust way of organizing the game loop and fixed update rates are desireable for stuff like physics or ai, I think you can achieve a much smoother simulation when processing user input or updating animations as fast as you possibly can.
-Following this, I have changed the implementation to process input and render as often as it can, while updating the game logic in a fixed time step (a great explanation of this type of game loop can be found here: http://gameprogrammingpatterns.com/game-loop.html).
+Following this, I have changed the implementation to process input and render as often as it can, while updating the game logic in a fixed time step (a great explanation of this type of game loop can be found [here](http://gameprogrammingpatterns.com/game-loop.html)).
 Further, I have added a second function to update the game logic, which is also (like render) called as often as possible.
 Finally, the game loop looks something like this:
 
