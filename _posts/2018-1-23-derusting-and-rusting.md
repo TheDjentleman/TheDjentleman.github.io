@@ -202,7 +202,7 @@ num = "0.1.41"
 ```
 
 Following this, we import these crates in our `lib.rs`:
-```
+```rust
 extern crate hound;
 extern crate num;
 ```
@@ -214,7 +214,7 @@ Next, I wanted to split the library's functionality into different modules:
 - plotting: for plotting our signal (and maybe other stuff)
 
 We define all of the modules of our library in `lib.rs` by adding
-```
+```rust
 pub mod plotting;
 mod analysis;
 mod tab_generation;
@@ -225,7 +225,7 @@ By adding `pub` in front of the plotting module, we make it accessible outside o
 With `mod <module-name>`, we are just declaring, that there is a module with the given name.
 Because of that, we also have to add the following source files: `plotting.rs`, `analysis.rs`, `tab_generation.rs` and `utils.rs` (the file names have to match the module names).
 As an alternative, we could have implemented the modules in the `lib.rs` file, by also adding the module functionality:
-```
+```rust
 mod analysis {
     // functionality
 }
@@ -234,7 +234,7 @@ This can be useful when we don't want to add source files for stuff like small s
 
 The last thing we have in our `lib.rs` is the definition of a struct named `Wavetab`, which will act like a facade for the library's functionality. 
 In Rust, we define class-like structures by first defining a `struct` (this is kind of comparable to C++ structs, except all fields are private), which bundle a bunch of values.
-```
+```rust
 pub struct Wavetab {
     wave: Vec<i16>,
     sample_rate: u32
@@ -245,7 +245,7 @@ In *wave* we will store the input signal and in *sample_rate*, the sampling rate
 Also, the struct must be public, to be accessible from outside the library.
 
 Now, to add callable functions to a struct, we *associate* functions with it  
-```
+```rust
 impl Wavetab {
     // functions
 }
@@ -258,7 +258,7 @@ Knowing how to define a function, we want to associate four functions with *Wave
 4. The facade function `convert_wave` to do the conversion of the loaded signal.
 
 Our constructor is pretty unspectacular:
-```
+```rust
 pub fn new(wave: Vec<i16>, sample_rate: u32) -> Wavetab {
     Wavetab { wave, sample_rate }
 }
@@ -285,7 +285,7 @@ So, from my understanding, there are 3 major modes of ownership and borrowing:
 - mutable borrowing
 
 Let's look at some code, to see what these things are about:
-```
+```rust
 let book = Book::new("Some book");
 
 borrow(&book);  // pass immutable reference (&)
@@ -319,7 +319,7 @@ By donating your book for charity, you transfer ownership of your book to the do
 Now, you don't have access to the book anymore.
 
 Ok, so after this mess of an analogy for trying to explain ownership, maybe you should consult [The Book](https://doc.rust-lang.org/book/second-edition/ch04-00-understanding-ownership.html), and then we move on and look at our `from_file` function: 
-```
+```rust
 pub fn from_file(file_path: &str) -> Wavetab {
     let mut reader = match hound::WavReader::open(file_path) {
         Ok(r) => r,
@@ -364,7 +364,7 @@ The first thing is *extension traits*.
 Having programmed in C# for a while, I came to really like extension methods, which can be used to extend already existing classes with additional functions, which are then treated as if they were part of the class.
 In Rust you can achieve the same, so I decided it might be handy to extend `Vec<T>` by a few convenience functions for our project.
 You can see all of the functions I have added so far in this piece of code:
-```
+```rust
 pub trait ArrExt<T> {
     fn min_val(&self) -> &T; // calculates the minimum value of the slice
     fn max_val(&self) -> &T; // calculates the maximum value of the slice
@@ -379,7 +379,7 @@ You can then implement the functions of a trait for a specific type (also types 
 So, in the last code fragment, we are defining a generic trait named `ArrExt` with four functions.
 
 Next, I will show the implementation of one of those functions and point out a few things.
-```
+```rust
 impl<T: PartialOrd + Signed> ArrExt<T> for [T] {  
     fn min_val(&self) -> &T {
         let min_val = self.iter().fold(None, |min, x| match min {
@@ -423,7 +423,7 @@ To plot this using pythons matplotlib, we have to perform several steps, given t
 6. Wait for the process to finish, otherwise we won't see anything: `process.wait().unwrap();`
 
 Putting it all together and adding respective error handling, we end up with something like this: 
-```
+```rust
 pub fn plot_wave<T: ToString>(wave: &Vec<T>) {
     // map every vector element to its string representation
     let wave_val_str: Vec<String> = wave.iter().map(|i| i.to_string()).collect();
@@ -465,7 +465,7 @@ pub fn plot_wave<T: ToString>(wave: &Vec<T>) {
 }
 ```
 If we now open up our `main.rs` and import our library, we can load a signal from a wave file and plot it using python:
-```
+```rust
 extern crate wavetab;
 
 use std::env;
