@@ -27,7 +27,7 @@ Before even starting, I skimmed through some tutorials and a gitbook named [3d G
 This book looks like the most promising reference for learning LWJGL, especially for newer LWJGL topics (it seems like there have been some major changes last year, including the way gpu buffers are handled, which are not covered by older tutorials).
 Besides that, another important resource for me is [learnopengl.com](https://learnopengl.com/), which offers a pretty extensive series of tutorials for OpenGL.
 Whilst these tutorials are for C++, they are still very helpful, as LWJGL is a wrapper around OpenGL for the most part (even on their homepage they suggest to learn the C API first: *If you're just getting started, please familiarize yourself with each [GLFW, OpenGL, OpenAL, ...] API first.*).
-In fact, looking at their [wiki](https://github.com/LWJGL/lwjgl3-wiki/wiki) they kind of discourage you from learning OpenGL through LWJGL :D; okay, this statement is a little over the, so please decide for yourself:
+In fact, looking at their [wiki](https://github.com/LWJGL/lwjgl3-wiki/wiki) they kind of discourage you from learning OpenGL through LWJGL :D; okay, this statement is a little over the top, so please decide for yourself:
 >Trying to learn the API via LWJGL is possible (a lot of javadoc is included), but not very productive. 
 
 and
@@ -36,13 +36,13 @@ and
 >- Get familiar with the native APIs you use.
 >- Read the FAQ and Troubleshooting pages.
 
-With this out of the way, we still want to use LWJGL for re-learning OpenGL (yes, that's right).
+With this out of the way, we still want to use LWJGL for (re-)learning OpenGL (yes, that's right).
 So after reading some stuff, I installed the current version of Java 9, my favourite IDE, Intellij IDEA (it's not that I dislike eclipse, I just like this one more), and started up a new maven project.
-Including LWJGL 3 in your maven project is easy, there is a maven dependency builder on the [LWJGL website](https://www.lwjgl.org/customize) which lets you pick and choose the components of the LWJGL that you want to use (e.g. OpenGL bindings (the graphics API), GLFW (a widely used windowing api) or JOML (the Java OpenGL math library, I guess it is the equivalent of glm for C++)).
+Including LWJGL 3 in your maven project is easy, there is a maven dependency builder on the [LWJGL website](https://www.lwjgl.org/customize) which lets you pick and choose the components of LWJGL that you want to use (e.g. OpenGL bindings (the graphics API), GLFW (a widely used windowing api) or JOML (the Java OpenGL math library, I guess it is the equivalent of glm for C++)).
 
 ### The Project and Code
 With the setup done, let's dive into a little bit of code ([github repository](https://github.com/xy7e/journey-2018-java-procedural-2X))! 
-In fact, there is not much interesting to show as of right now.
+Sadly, there is not much interesting to show as of right now.
 Regarding the project structure, I am not really sure about what it will look like towards the end of the year, so I just started with some packages I think will be needed.
 With this in mind, I expect the project structure to change over time.
 Right now it looks something like this:
@@ -53,18 +53,18 @@ Right now it looks something like this:
 Having the initial project structure up and running I started to write some code I thought to be essential for starting the project:
 1. A game loop
 2. Some rendering stuff
-3. A 3D camera that enables to navigate through our 3D world
+3. A 3D camera that enables us to navigate through our 3D world
 4. Something that manages (generated) meshes and objects in our 3D world
 
-Implementation-wise most of the stuff I've got so far is based off the first view chapers of [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details) and [learnopengl](https://learnopengl.com/) (mostly camera-related topics), so I want be talking much about Java code in this post.
+Implementation-wise most of the stuff I've got so far is based off the first view chapers of [3d Game Development with LWJGL](https://www.gitbook.com/book/lwjglgamedev/3d-game-development-with-lwjgl/details) and [learnopengl](https://learnopengl.com/) (mostly camera-related topics), so I won't be talking much about Java code in this post.
 Besides the stuff I kept from the book, I've thrown away some of the abstractions suggested in the book, which are made to have a more game engine like setup with code reusable for multiple projects (which I am not aiming for), and added some abstractions in other places (e.g. for scene management).
-Also, I don't see the point of running the game engine in a separate thread, when the main thread will go idle from there (maybe I will learn  why this is a good thing in the future).
+Also, I don't see the point of running the game engine in a separate thread, when the main thread will go idle from there (maybe I will learn why this is a good thing in the future).
 
 Now, there are two things worth talking about.
 One of these is the game loop.
 On this topic, the book suggests using a *fixed time step* game loop (with the additional possibility to skip frames when needed).
-When using such a game loop, you are forcing all updates and render calls to run a fixed number of times per seconds.
-While this is a very robust way of organizing the game loop and fixed update rates are desireable for stuff like physics or ai, I think you can achieve much smoother movement when processing user input or updating animations as fast as you possibly can.
+When using such a game loop, you are forcing all updates and render calls to run a fixed number of times per second.
+While this is a very robust way of organizing the game loop and fixed update rates are desireable for stuff like physics or ai, I think you can achieve a much smoother simulation when processing user input or updating animations as fast as you possibly can.
 Following this, I have changed the implementation to process input and render as often as it can, while updating the game logic in a fixed time step (a great explanation of this type of game loop can be found here: http://gameprogrammingpatterns.com/game-loop.html).
 Further, I have added a second function to update the game logic, which is also (like render) called as often as possible.
 Finally, the game loop looks something like this:
@@ -93,12 +93,12 @@ while (true) {
 }
 ```
 
-As you can see in this sample, I now have two `update` functions: `fixedUpdate` and `update`, which correspond to the two mentioned before.
-Another remark: I am using `System.nanoTime()` instead of `System.currentTimeMillis()`, because of its seemingly higher precision and consistency (which comes at a insignificantly higher computational cost).
+As you can see in this sample, we now have two `update` functions: `fixedUpdate` and `update`, which correspond to the two mentioned before.
+Another remark: I am using `System.nanoTime()` instead of `System.currentTimeMillis()`, because of its seemingly higher precision and consistency (which comes at an insignificantly higher computational cost).
 
-The other thing I just have to point out here is my first encounter with *JOML*, the math library, where I learned that reading the docs is better than just assuming that JOML works like glm (my assumption stemmed from the fact that JOML is shipped as an addon to lwjgl, like glm is for OpenGL in a C++ context, for doing vector and matrix algebra).
+The other thing I just have to point out here is my first encounter with *JOML*, the math library, where I learned that reading the docs is better than just assuming that JOML works like glm (my assumption stemmed from the fact that JOML is shipped as an addon to lwjgl like glm is for OpenGL in a C++ context for doing vector and matrix algebra).
 Look at the following scenario: For my camera, I've set up three vectors (as suggested [here](https://learnopengl.com/#!Getting-started/Camera)), `forward`, `up` and `right`, which point in the direction they are named, while taking the camera's rotation (`pitch` and `yaw`) into consideration.
-With such an approach, we have to recalculate these vectors everytime `pitch` or `yaw` are changing, so I ported the C++ code directly to Java using JOML instead of glm.
+With such an approach, we have to recalculate these vectors everytime `pitch` or `yaw` changes, so I ported the C++ code directly to Java using JOML instead of glm.
 Then it looked like this:
 ```
 forward.x = (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
@@ -118,7 +118,7 @@ What I've learned from that: Just read the documentation first, dumbass!
 Even on the main page of the [JOML github](https://github.com/JOML-CI/JOML) it reads:
 >All operations in JOML are designed to modify the object on which the operation is invoked.
 
-From there, it was clear for me, how to do the stuff I want to do.
+From there, it was clear to me, how to do the stuff I want to do.
 Finally, one way of implementing it correctly, would be this:
 ```
 forward.x = (float)(Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
@@ -137,7 +137,7 @@ That is pretty neat in my opinion.
 
 As a next step, I will start with some procedural generation: terrain generation.
 I chose to start with terrain generation, as (I think) it is one of the most common applications for procedural generation, so I thought this might be a good start.
-Also I decided to start off with most of the procedural generation stuff before looking at game play features, because creating game play is more fun when there is actually something interesting to look at.
+Also I decided to start off with most of the procedural generation stuff before looking at gameplay features, because creating gameplay is more fun when there is actually something interesting to look at.
 
 I guess that is all for Java for now, so let's move on to my Rust project.
 
