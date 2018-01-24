@@ -297,6 +297,7 @@ get_back_borrowed_books();  // get back all borrowed books -> all immutable refe
 borrow_it_to_your_best_friends_infant(&mut book);  // pass mutable reference (&mut), there can always be only one at a time
 
 // more time passes...
+
 get_back_borrowed_books();
 
 donate(book);  // pass the instance itself -> transfer ownership
