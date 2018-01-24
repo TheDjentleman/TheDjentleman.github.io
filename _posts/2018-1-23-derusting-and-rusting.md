@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Programming Journey 2018 - Derusting some Java and rusting some Rust
+title: Derusting some Java and rusting some Rust
 github_comments_issueid: "2"
 ---
 
