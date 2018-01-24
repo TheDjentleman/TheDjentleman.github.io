@@ -513,6 +513,13 @@ scene in GameLogic klasse stecken oder so? -> alles mögliche aus Proc2X raussch
 inheritance hierarchie für sceneobjects -> SceneObject ist abstract, dann können klassen davon abgeleitet werden und noch interfaces mit default methoden eingebaut werden!
 -> interfaces bringen gewisse funktionalitäten mit
 
+https://www.youtube.com/watch?v=wbpMiKiSKm8
+http://catlikecoding.com/unity/tutorials/noise-derivatives/
+fractal noise = summing octaves of perlin noise  (https://gamedev.stackexchange.com/a/68170/83580)
+https://stackoverflow.com/a/36833930/1861380
+https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf
+
+
 Rust
 - wav laden mit hound
 - fft implementierung? -> eher: fange an notenanschläge zu zählen
