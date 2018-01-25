@@ -515,9 +515,16 @@ inheritance hierarchie für sceneobjects -> SceneObject ist abstract, dann könn
 
 https://www.youtube.com/watch?v=wbpMiKiSKm8
 http://catlikecoding.com/unity/tutorials/noise-derivatives/
+https://www.youtube.com/watch?v=F2TfRaZ6COQ
+fractal noise terrain
+voronoi terrain (https://www.redblobgames.com/)
+marching cubes terrain
+
 fractal noise = summing octaves of perlin noise  (https://gamedev.stackexchange.com/a/68170/83580)
 https://stackoverflow.com/a/36833930/1861380
 https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf
+
+irgendwas low poly mit hex grid anstatt triangles?
 
 
 Rust
