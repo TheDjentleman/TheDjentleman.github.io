@@ -523,6 +523,7 @@ marching cubes terrain
 fractal noise = summing octaves of perlin noise  (https://gamedev.stackexchange.com/a/68170/83580)
 https://stackoverflow.com/a/36833930/1861380
 https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf
+http://webstaff.itn.liu.se/~stegu/simplexnoise/SimplexNoise.java
 
 irgendwas low poly mit hex grid anstatt triangles?
 
