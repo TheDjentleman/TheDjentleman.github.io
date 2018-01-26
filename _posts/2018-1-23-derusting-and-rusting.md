@@ -254,7 +254,7 @@ In Rust, function definitions start with the keyword `fn`, followed by the funct
 Knowing how to define a function, we want to associate four functions with *Wavetab*:
 1. A constructor `new` (the name *new* is by convention, it could be called anything)
 2. A convenience function `from_file` to create the struct with data from a file
-3. A getter function for the wave (which should return a immutable reference to enable *borrowing* of the variable)
+3. A getter function for the wave (which should return an immutable reference to enable *borrowing* of the variable)
 4. The facade function `convert_wave` to do the conversion of the loaded signal.
 
 Our constructor is pretty unspectacular:
