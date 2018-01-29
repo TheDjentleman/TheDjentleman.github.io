@@ -518,6 +518,7 @@ http://catlikecoding.com/unity/tutorials/noise-derivatives/
 https://www.youtube.com/watch?v=F2TfRaZ6COQ
 fractal noise terrain
 voronoi terrain (https://www.redblobgames.com/)
+https://www.redblobgames.com/maps/terrain-from-noise/
 marching cubes terrain
 
 fractal noise = summing octaves of perlin noise  (https://gamedev.stackexchange.com/a/68170/83580)
