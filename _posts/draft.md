@@ -538,3 +538,10 @@ Rust
 -- http://www.drdobbs.com/cpp/a-simple-and-efficient-fft-implementatio/199500857
 - use python for plotting (for now)
 -->
+
+onset detection
+https://arxiv.org/pdf/1712.02567.pdf
+https://stackoverflow.com/questions/294468/note-onset-detection
+http://bingweb.binghamton.edu/~ahess2/Onset_Detection_Nov302011.pdf
+http://www.nyu.edu/classes/bello/MIR_files/2005_BelloEtAl_IEEE_TSALP.pdf
+http://librosa.github.io/librosa/generated/librosa.onset.onset_backtrack.html#librosa.onset.onset_backtrack
