@@ -543,6 +543,7 @@ Rust
 -->
 
 onset detection
+https://github.com/andreasjansson/onset-detection
 https://arxiv.org/pdf/1712.02567.pdf
 https://stackoverflow.com/questions/294468/note-onset-detection
 http://bingweb.binghamton.edu/~ahess2/Onset_Detection_Nov302011.pdf
