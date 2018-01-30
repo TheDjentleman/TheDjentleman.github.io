@@ -510,6 +510,8 @@ Java
 save scene as number of objects
 scene in GameLogic klasse stecken oder so? -> alles mögliche aus Proc2X rausschieben
 
+irgendwann input system erklären
+
 inheritance hierarchie für sceneobjects -> SceneObject ist abstract, dann können klassen davon abgeleitet werden und noch interfaces mit default methoden eingebaut werden!
 -> interfaces bringen gewisse funktionalitäten mit
 
