@@ -23,6 +23,7 @@ design goals, intuition behind it
 
 ### Procedural terrain
 setup, plane deren verts angehoben oder abgesenkt werden
+also fangen an ein plane mesh zu generieren -> algo + mesh bild
 
 #### 1. Fractal Terrain
 a
