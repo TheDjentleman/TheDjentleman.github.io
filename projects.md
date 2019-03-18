@@ -1,7 +1,7 @@
 ---
 layout: page
-title: About
-permalink: /about/
+title: Projects
+permalink: /projects/
 ---
 
 Hi there, my name is Ronny and I am a computer scientist and a hobby musician.
