@@ -4,4 +4,4 @@ title: Projects
 permalink: /projects/
 ---
 
-<Insert all of the fancy test here>
+[Insert all of the fancy test here]
