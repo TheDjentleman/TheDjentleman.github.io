@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Wavetab Dev Diary: Rusting some Rust
+title: Wavetab Dev Diary - Getting started with Rust
 github_comments_issueid: "2"
 ---
 

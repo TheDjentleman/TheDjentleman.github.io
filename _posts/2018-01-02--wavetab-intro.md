@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Wavetab Dev Diary: Introduction
+title: Wavetab Dev Diary - Introduction
 github_comments_issueid: "1"
 ---
 
